@@ -8,3 +8,9 @@ A compiler project to create a LaTex document out of Javadoc.
 - Compile those generated classes
 - Use "grun Javadoc documentation" inside the folder of the generated classes to run the testrig
 - Enter some Javadoc code you want to test
+
+## Link section
+
+[Class definition](https://www.tutorialspoint.com/java/java_documentation.htm)
+
+[Generated Javadoc](https://www.tutorialspoint.com/java/index.html)

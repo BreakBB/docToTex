@@ -10,8 +10,24 @@ CLASS
     : 'class'
     ;
 
+FINAL
+    : 'final'
+    ;
+
 STATIC
     : 'static'
+    ;
+
+EXTENDS
+    : 'extends'
+    ;
+
+IMPLEMENTS
+    : 'implements'
+    ;
+
+COMMA
+    : ','
     ;
 
 NAME
@@ -29,7 +45,7 @@ SPACE
 	;
 
 TEXT_CONTENT
-	: ~[\n\r\t @*{}/a-zA-Z]+
+	: ~[\n\r\t @*{}()/a-zA-Z]+
 	;
 
 AT
@@ -70,11 +86,4 @@ PARATHESES_OPEN
 
 PARATHESES_CLOSE
     : ')'
-    ;
-
-
-// Individual types are possible
-// Those might need to include digits as well
-RETTYPE
-    : NAME
     ;

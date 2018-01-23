@@ -3,12 +3,29 @@ parser grammar JavadocParser;
 options { tokenVocab=JavadocLexer; }
 
 
+// TODO: package und imports
+
 documentation
 	: EOF
-	| JAVADOC_START skipWhitespace* documentationContent JAVADOC_END skipWhitespace* javaClass EOF
-	| skipWhitespace* documentationContent EOF
+	| skipWhitespace* (javaClassDoc | javaClass) skipCode* ((insideClassDoc | javaClass | javaMethod) skipCode*)* skipCode* EOF
 	;
 
+// TODO: skipWhitespace verringern
+
+javaClassDoc
+    : javaDoc javaClass
+    ;
+
+insideClassDoc
+    : javaClassDoc
+    | javaDoc javaMethod
+    ;
+
+javaDoc
+    : JAVADOC_START skipWhitespace* documentationContent JAVADOC_END skipWhitespace*
+    ;
+
+// TODO: tagSection aufteilen in Class und Methoden für Token
 documentationContent
 	: description skipWhitespace*
 	| skipWhitespace* tagSection
@@ -118,17 +135,40 @@ braceText
 	;
 
 javaClass
-    : ACCESSMODS? skipWhitespace* STATIC? skipWhitespace* CLASS skipWhitespace* NAME skipCode* documentation?
+    : ACCESSMODS? skipWhitespace* STATIC? skipWhitespace* CLASS skipWhitespace* NAME skipWhitespace* polymorphy?
     ;
 
+// TODO: '...' Operator bei Parametern unterstützen
 javaMethod
-    : ACCESSMODS? skipWhitespace* STATIC? skipWhitespace* RETTYPE skipWhitespace* NAME skipWhitespace* PARATHESES_OPEN javaParams PARATHESES_CLOSE skipCode+ documentation?
+    : ACCESSMODS? skipWhitespace* staticFinal? skipWhitespace* NAME skipWhitespace* NAME skipWhitespace* PARATHESES_OPEN javaParams? PARATHESES_CLOSE
+    ;
+
+staticFinal
+    : STATIC
+    | FINAL
+    | FINAL skipWhitespace* STATIC
+    | STATIC skipWhitespace* FINAL
     ;
 
 javaParams
-    : skipWhitespace* NAME skipWhitespace* NAME
+    : skipWhitespace* NAME skipWhitespace* NAME (COMMA skipWhitespace* NAME skipWhitespace* NAME)*
     ;
 
+polymorphy
+    : javaExtends
+    | javaImplements
+    | javaExtends skipWhitespace* javaImplements
+    ;
+
+javaExtends
+    : EXTENDS skipWhitespace* NAME
+    ;
+
+javaImplements
+    : IMPLEMENTS skipWhitespace* NAME (skipWhitespace* COMMA skipWhitespace* NAME)*
+    ;
+
+// TODO: Alles außer javaMethod und javaClass und JAVADOC_START überspringen
 skipCode
     : skipWhitespace
     ;
