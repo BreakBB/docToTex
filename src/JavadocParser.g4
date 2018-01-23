@@ -5,7 +5,7 @@ options { tokenVocab=JavadocLexer; }
 
 documentation
 	: EOF
-	| JAVADOC_START skipWhitespace* documentationContent JAVADOC_END EOF
+	| JAVADOC_START skipWhitespace* documentationContent JAVADOC_END skipWhitespace* javaClass EOF
 	| skipWhitespace* documentationContent EOF
 	;
 
@@ -19,7 +19,6 @@ skipWhitespace
 	: SPACE
 	| NEWLINE
 	;
-
 
 description
 	: descriptionLine (descriptionNewline+ descriptionLine)*
@@ -56,7 +55,6 @@ descriptionNewline
 	: NEWLINE
 	;
 
-
 tagSection
 	: blockTag+
 	;
@@ -89,7 +87,6 @@ blockTagTextElement
 	| BRACE_CLOSE
 	;
 
-
 inlineTag
 	: INLINE_TAG_START inlineTagName SPACE* inlineTagContent? BRACE_CLOSE
 	;
@@ -119,3 +116,19 @@ braceText
 	| SLASH
 	| NEWLINE
 	;
+
+javaClass
+    : ACCESSMODS? skipWhitespace* STATIC? skipWhitespace* CLASS skipWhitespace* NAME skipCode* documentation?
+    ;
+
+javaMethod
+    : ACCESSMODS? skipWhitespace* STATIC? skipWhitespace* RETTYPE skipWhitespace* NAME skipWhitespace* PARATHESES_OPEN javaParams PARATHESES_CLOSE skipCode+ documentation?
+    ;
+
+javaParams
+    : skipWhitespace* NAME skipWhitespace* NAME
+    ;
+
+skipCode
+    : skipWhitespace
+    ;

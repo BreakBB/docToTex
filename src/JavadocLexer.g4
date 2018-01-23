@@ -1,5 +1,19 @@
 lexer grammar JavadocLexer;
 
+ACCESSMODS
+    : 'public'
+    | 'protected'
+    | 'private'
+    ;
+
+CLASS
+    : 'class'
+    ;
+
+STATIC
+    : 'static'
+    ;
+
 NAME
 	: [a-zA-Z]+
 	;
@@ -49,3 +63,18 @@ BRACE_OPEN
 BRACE_CLOSE
 	: '}'
 	;
+
+PARATHESES_OPEN
+    : '('
+    ;
+
+PARATHESES_CLOSE
+    : ')'
+    ;
+
+
+// Individual types are possible
+// Those might need to include digits as well
+RETTYPE
+    : NAME
+    ;
