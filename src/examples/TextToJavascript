@@ -1,0 +1,16 @@
+/**
+* oiajsdoijasd
+* @author oasdpoasd
+*/
+public class Myclass extends A implements B{
+
+
+    /**
+    * oiajsd
+    * noch mehr Doku
+    * @params sind halt da
+    */
+    public static void myMethod(String a, int b) {
+        int i;//fuehrt zu Fehler
+    }
+}

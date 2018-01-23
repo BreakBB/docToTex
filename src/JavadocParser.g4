@@ -7,10 +7,8 @@ options { tokenVocab=JavadocLexer; }
 
 documentation
 	: EOF
-	| skipWhitespace* (javaClassDoc | javaClass) skipCode* ((insideClassDoc | javaClass | javaMethod) skipCode*)* skipCode* EOF
+	| (javaClassDoc | javaClass) (insideClassDoc | javaClass | javaMethod)* EOF
 	;
-
-// TODO: skipWhitespace verringern
 
 javaClassDoc
     : javaDoc javaClass
@@ -22,23 +20,20 @@ insideClassDoc
     ;
 
 javaDoc
-    : JAVADOC_START skipWhitespace* documentationContent JAVADOC_END skipWhitespace*
+    : JAVADOC_START documentationContent JAVADOC_END
     ;
 
 // TODO: tagSection aufteilen in Class und Methoden für Token
 documentationContent
-	: description skipWhitespace*
-	| skipWhitespace* tagSection
-	| description NEWLINE+ skipWhitespace* tagSection
+	: description
+	| tagSection
+	| description tagSection
 	;
 
-skipWhitespace
-	: SPACE
-	| NEWLINE
-	;
-
+// TODO: siehe TODO bei descriptionNewLine ausserdem sollten dann die einzelnen Elemente gekuerzt werden
 description
-	: descriptionLine (descriptionNewline+ descriptionLine)*
+//	: descriptionLine (descriptionNewline+ descriptionLine)*
+    : descriptionLine+
 	;
 
 descriptionLine
@@ -46,18 +41,19 @@ descriptionLine
 	| inlineTag descriptionLineElement*
 	;
 
+//TODO: Ist das AT richtig
 descriptionLineStart
-	: SPACE? descriptionLineNoSpaceNoAt+ (descriptionLineNoSpaceNoAt | SPACE | AT)*
+	: descriptionLineNoAt+ (descriptionLineNoAt | AT)*
 	;
 
-descriptionLineNoSpaceNoAt
+descriptionLineNoAt
 	: TEXT_CONTENT
 	| NAME
 	| STAR
 	| SLASH
-	| BRACE_OPEN
+/*	| BRACE_OPEN
 	| BRACE_CLOSE
-	;
+*/	;
 
 descriptionLineElement
 	: inlineTag
@@ -65,19 +61,19 @@ descriptionLineElement
 	;
 
 descriptionLineText
-	: (descriptionLineNoSpaceNoAt | SPACE | AT)+
+	: (descriptionLineNoAt | AT)+
 	;
-
-descriptionNewline
-	: NEWLINE
-	;
+// TODO fuer Ausgabe irrelevant wie viele Zeilen. Es wird in Tex runtergekuerzt. Oder soll jeder Zeilenumbruch als solcher gewertet werden
+//descriptionNewline
+//	: NEWLINE
+//	;
 
 tagSection
 	: blockTag+
 	;
 
 blockTag
-	: SPACE? AT blockTagName SPACE? blockTagContent*
+	: AT blockTagName blockTagContent*
 	;
 
 blockTagName
@@ -97,15 +93,15 @@ blockTagText
 blockTagTextElement
 	: TEXT_CONTENT
 	| NAME
-	| SPACE
 	| STAR
 	| SLASH
-	| BRACE_OPEN
+/*	| BRACE_OPEN
 	| BRACE_CLOSE
-	;
+*/	;
+
 
 inlineTag
-	: INLINE_TAG_START inlineTagName SPACE* inlineTagContent? BRACE_CLOSE
+	: INLINE_TAG_START inlineTagName inlineTagContent? BRACE_CLOSE
 	;
 
 inlineTagName
@@ -135,40 +131,36 @@ braceText
 	;
 
 javaClass
-    : ACCESSMODS? skipWhitespace* STATIC? skipWhitespace* CLASS skipWhitespace* NAME skipWhitespace* polymorphy?
+    : ACCESSMODS? STATIC? CLASS NAME polymorphy?
     ;
 
 // TODO: '...' Operator bei Parametern unterstützen
 javaMethod
-    : ACCESSMODS? skipWhitespace* staticFinal? skipWhitespace* NAME skipWhitespace* NAME skipWhitespace* PARATHESES_OPEN javaParams? PARATHESES_CLOSE
+    : ACCESSMODS? staticFinal? NAME NAME PARATHESES_OPEN javaParams? PARATHESES_CLOSE
     ;
 
 staticFinal
     : STATIC
     | FINAL
-    | FINAL skipWhitespace* STATIC
-    | STATIC skipWhitespace* FINAL
+    | FINAL STATIC
+    | STATIC FINAL
     ;
 
 javaParams
-    : skipWhitespace* NAME skipWhitespace* NAME (COMMA skipWhitespace* NAME skipWhitespace* NAME)*
+    : NAME NAME (COMMA NAME NAME)*
     ;
 
 polymorphy
     : javaExtends
     | javaImplements
-    | javaExtends skipWhitespace* javaImplements
+    | javaExtends javaImplements
     ;
 
 javaExtends
-    : EXTENDS skipWhitespace* NAME
+    : EXTENDS NAME
     ;
 
 javaImplements
-    : IMPLEMENTS skipWhitespace* NAME (skipWhitespace* COMMA skipWhitespace* NAME)*
+    : IMPLEMENTS NAME (COMMA NAME)*
     ;
-
-// TODO: Alles außer javaMethod und javaClass und JAVADOC_START überspringen
-skipCode
-    : skipWhitespace
-    ;
+//TODO: skipCode fuer falsche Token,die zu Fehler fuehren
