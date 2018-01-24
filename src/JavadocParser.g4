@@ -3,91 +3,41 @@ parser grammar JavadocParser;
 options { tokenVocab=JavadocLexer; }
 
 
-// TODO: package und imports
+// TODO: package und imports skippen
+// TODO: Anonyme innere Klassen
 
 documentation
 	: EOF
-	| (javaClassDoc | javaClass) (insideClassDoc | javaClass | javaMethod)* EOF
+	| (javaClassDoc | javaClassOrInterface) EOF
 	;
 
 javaClassDoc
-    : javaDoc javaClass
+    : JAVADOC_START description? classTag* JAVADOC_END javaClassOrInterface
+    ;
+
+javaMethodDoc
+    : JAVADOC_START description? (methodTag | methodOrConstructorTag)* JAVADOC_END javaMethod
+    ;
+
+javaFieldDoc
+    : JAVADOC_START description? fieldTag* JAVADOC_END javaMethod
+    ;
+
+javaConstrutorDoc
+    : JAVADOC_START description? methodOrConstructorTag* JAVADOC_END javaConstrutor
     ;
 
 insideClassDoc
     : javaClassDoc
-    | javaDoc javaMethod
+    | javaFieldDoc
+    | javaMethodDoc
+    | javaConstrutorDoc
     ;
-
-javaDoc
-    : JAVADOC_START documentationContent JAVADOC_END
-    ;
-
-// TODO: tagSection aufteilen in Class und Methoden für Token
-documentationContent
-	: description
-	| tagSection
-	| description tagSection
-	;
 
 // TODO: siehe TODO bei descriptionNewLine ausserdem sollten dann die einzelnen Elemente gekuerzt werden
 description
 //	: descriptionLine (descriptionNewline+ descriptionLine)*
-    : descriptionLine+
-	;
-
-descriptionLine
-	: descriptionLineStart descriptionLineElement*
-	| inlineTag descriptionLineElement*
-	;
-
-//TODO: Ist das AT richtig
-descriptionLineStart
-	: descriptionLineNoAt+ (descriptionLineNoAt | AT)*
-	;
-
-descriptionLineNoAt
-	: TEXT_CONTENT
-	| NAME
-	| STAR
-	| SLASH
-/*	| BRACE_OPEN
-	| BRACE_CLOSE
-*/	;
-
-descriptionLineElement
-	: inlineTag
-	| descriptionLineText
-	;
-
-descriptionLineText
-	: (descriptionLineNoAt | AT)+
-	;
-// TODO fuer Ausgabe irrelevant wie viele Zeilen. Es wird in Tex runtergekuerzt. Oder soll jeder Zeilenumbruch als solcher gewertet werden
-//descriptionNewline
-//	: NEWLINE
-//	;
-
-tagSection
-	: blockTag+
-	;
-
-blockTag
-	: AT blockTagName blockTagContent*
-	;
-
-blockTagName
-	: NAME
-	;
-
-blockTagContent
-	: blockTagText
-	| inlineTag
-	| NEWLINE
-	;
-
-blockTagText
-	: blockTagTextElement+
+    : (NAME | inlineTag)+
 	;
 
 blockTagTextElement
@@ -98,7 +48,6 @@ blockTagTextElement
 /*	| BRACE_OPEN
 	| BRACE_CLOSE
 */	;
-
 
 inlineTag
 	: INLINE_TAG_START inlineTagName inlineTagContent? BRACE_CLOSE
@@ -130,16 +79,60 @@ braceText
 	| NEWLINE
 	;
 
-javaClass
-    : ACCESSMODS? STATIC? CLASS NAME polymorphy?
+classTag
+    : AUTHOR NAME+ (COMMA NAME+)*
+    | DATE
+    | DEPRECATED
+    | SEE
+    | SERIAL
+    | SINCE
+    | VERSION
+    ;
+
+methodOrConstructorTag
+    : SEE
+    | SINCE
+    | DEPRECATED
+    | PARAM NAME NAME+
+    | THROWS
+    | EXCEPTION
+    | SERIAL_DATA
+    ;
+
+methodTag
+    :  RETURN
+    ;
+
+fieldTag
+    : SEE
+    | SINCE
+    | DEPRECATED
+    | SERIAL
+    | SERIAL_FIELD
+    ;
+
+javaClassOrInterface
+    : ACCESSMODS? modifier? (CLASS | INTERFACE) NAME polymorphy? BRACE_OPEN (insideClassDoc | javaClassOrInterface | javaField | javaMethod | javaConstrutor)* BRACE_CLOSE
     ;
 
 // TODO: '...' Operator bei Parametern unterstützen
 javaMethod
-    : ACCESSMODS? staticFinal? NAME NAME PARATHESES_OPEN javaParams? PARATHESES_CLOSE
+    : ACCESSMODS? modifier? NAME FUNC_NAME javaParams (SEMI | block)
     ;
 
-staticFinal
+block
+    : BRACE_OPEN (skipToBrace* block)* skipToBrace* BRACE_CLOSE
+    ;
+
+javaConstrutor
+    : ACCESSMODS? FUNC_NAME javaParams block
+    ;
+
+javaField
+    : ACCESSMODS? modifier? NAME NAME skipCodeToSemi
+    ;
+
+modifier
     : STATIC
     | FINAL
     | FINAL STATIC
@@ -147,13 +140,13 @@ staticFinal
     ;
 
 javaParams
-    : NAME NAME (COMMA NAME NAME)*
+    : (NAME NAME (COMMA NAME NAME)*)? PARATHESES_CLOSE
     ;
 
 polymorphy
-    : javaExtends
+    : javaExtends javaImplements
     | javaImplements
-    | javaExtends javaImplements
+    | javaExtends
     ;
 
 javaExtends
@@ -163,4 +156,16 @@ javaExtends
 javaImplements
     : IMPLEMENTS NAME (COMMA NAME)*
     ;
+
+skipCodeToSemi
+    : ~SEMI* SEMI
+    ;
+
+skipToBrace
+    : ~(BRACE_CLOSE | BRACE_OPEN)
+    ;
+
 //TODO: skipCode fuer falsche Token,die zu Fehler fuehren
+skipCode
+    : .
+    ;

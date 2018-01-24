@@ -10,6 +10,10 @@ CLASS
     : 'class'
     ;
 
+INTERFACE
+    : 'interface'
+    ;
+
 FINAL
     : 'final'
     ;
@@ -30,6 +34,13 @@ COMMA
     : ','
     ;
 
+SEMI
+    : ';'
+    ;
+
+FUNC_NAME
+    :[a-zA-Z]+ (SPACE | NEWLINE)* PARATHESES_OPEN
+    ;
 NAME
 	: [a-zA-Z]+
 	;
@@ -52,6 +63,59 @@ AT
 	: '@'
 	;
 
+
+AUTHOR
+    : AT 'author'
+    ;
+
+DATE
+    : AT 'date'
+    ;
+
+DEPRECATED
+    : AT 'deprecated'
+    ;
+
+SEE
+    : AT 'see'
+    ;
+
+SERIAL_DATA
+    : AT 'serialData'
+    ;
+
+SERIAL_FIELD
+    : AT 'serialField'
+    ;
+
+SERIAL
+    : AT 'serial'
+    ;
+
+SINCE
+    : AT 'since'
+    ;
+
+VERSION
+    : AT 'version'
+    ;
+
+PARAM
+    : AT 'param'
+    ;
+
+RETURN
+    : AT 'return'
+    ;
+
+THROWS
+    : AT 'throws'
+    ;
+
+EXCEPTION
+    : AT 'exception'
+    ;
+
 STAR
 	: '*'
 	;
@@ -65,19 +129,23 @@ JAVADOC_START
 	;
 
 JAVADOC_END
-	: SPACE? STAR* '*/'
+	: SPACE* STAR* '*/'
 	;
+
+COMMENT
+    : '//'+ ~[\n\r]* NEWLINE ->skip
+    ;
 
 INLINE_TAG_START
 	: '{@'
 	;
 
 BRACE_OPEN
-	: '{' ->skip
+	: '{'
 	;
 
 BRACE_CLOSE
-	: '}' ->skip
+	: '}'
 	;
 
 PARATHESES_OPEN
