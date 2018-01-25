@@ -20,6 +20,7 @@ public class Myclass extends A implements B{
     * noch mehr Doku
     * @param sind halt da
     */
+    @Override
     public static void myMethod(String a, int b) {
         int b;//fuehrt zu Fehler
         {

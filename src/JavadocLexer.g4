@@ -22,12 +22,24 @@ STATIC
     : 'static'
     ;
 
+ABSTRACT
+    : 'abstract'
+    ;
+
 EXTENDS
     : 'extends'
     ;
 
 IMPLEMENTS
     : 'implements'
+    ;
+
+PACKAGE
+    : 'package'
+    ;
+
+IMPORT
+    : 'import' /* ~';' SEMI ->skip */
     ;
 
 COMMA
@@ -38,11 +50,32 @@ SEMI
     : ';'
     ;
 
-FUNC_NAME
-    :[a-zA-Z]+ (SPACE | NEWLINE)* PARATHESES_OPEN
+AT
+	: '@'
+	;
+
+DOT
+    : '.'
     ;
+
+QUOTE
+    : '"'
+    ;
+
+SINGLE_QUOTE
+    : '\''
+    ;
+
+FUNC_NAME
+    : NAME (SPACE | NEWLINE)* PARATHESES_OPEN
+    ;
+
+TYPE_NAME
+    : NAME DOT (NAME | DOT)+
+    ;
+
 NAME
-	: [a-zA-Z]+
+	: [a-zA-Z0-9]+
 	;
 
 NEWLINE
@@ -55,65 +88,80 @@ SPACE
 	: (' '|'\t')+ -> skip
 	;
 
-TEXT_CONTENT
-	: ~[\n\r\t @*{}()/a-zA-Z]+
-	;
-
-AT
-	: '@'
-	;
-
-
 AUTHOR
-    : AT 'author'
+    : NEWLINE SPACE* AT 'author'
     ;
 
 DATE
-    : AT 'date'
+    : NEWLINE SPACE* AT 'date'
     ;
 
 DEPRECATED
-    : AT 'deprecated'
+    : NEWLINE SPACE* AT 'deprecated'
     ;
 
 SEE
-    : AT 'see'
+    : NEWLINE SPACE* AT 'see'
     ;
 
 SERIAL_DATA
-    : AT 'serialData'
+    : NEWLINE SPACE* AT 'serialData'
     ;
 
 SERIAL_FIELD
-    : AT 'serialField'
+    : NEWLINE SPACE* AT 'serialField'
     ;
 
 SERIAL
-    : AT 'serial'
+    : NEWLINE SPACE* AT 'serial'
     ;
 
 SINCE
-    : AT 'since'
+    : NEWLINE SPACE* AT 'since'
     ;
 
 VERSION
-    : AT 'version'
+    : NEWLINE SPACE* AT 'version'
     ;
 
 PARAM
-    : AT 'param'
+    : NEWLINE SPACE* AT 'param'
     ;
 
 RETURN
-    : AT 'return'
+    : NEWLINE SPACE* AT 'return'
     ;
 
 THROWS
-    : AT 'throws'
+    : NEWLINE SPACE* AT 'throws'
     ;
 
 EXCEPTION
-    : AT 'exception'
+    : NEWLINE SPACE* AT 'exception'
+    ;
+
+INLINE_CODE
+    : BRACE_OPEN AT 'code'
+    ;
+
+INLINE_DOC_ROOT
+    : BRACE_OPEN AT 'docRoot'
+    ;
+
+INLINE_INHERIT_DOC
+    : BRACE_OPEN AT 'inheritDoc'
+    ;
+
+INLINE_LINK_PLAIN
+    : BRACE_OPEN AT 'linkplain'
+    ;
+
+INLINE_LINK
+    : BRACE_OPEN AT 'link'
+    ;
+
+INLINE_VALUE
+    : BRACE_OPEN AT 'value'
     ;
 
 STAR
@@ -136,9 +184,7 @@ COMMENT
     : '//'+ ~[\n\r]* NEWLINE ->skip
     ;
 
-INLINE_TAG_START
-	: '{@'
-	;
+// TODO: skip Block comments
 
 BRACE_OPEN
 	: '{'
@@ -155,3 +201,19 @@ PARATHESES_OPEN
 PARATHESES_CLOSE
     : ')'
     ;
+
+BRACKETS
+    : '[' SPACE* ']'
+    ;
+
+ANGLE_BRACKET_OPEN
+    : '<'
+    ;
+
+ANGLE_BRACKET_CLOSE
+    : '>'
+    ;
+
+TEXT_CONTENT
+	: ~[\n\r\t @*{}[\]()<>",/a-zA-Z]+
+	;
