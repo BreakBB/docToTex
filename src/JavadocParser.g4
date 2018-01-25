@@ -13,46 +13,50 @@ documentation
 
 // =============== Documented ======================
 javaClassDoc
-    : JAVADOC_START description? classTag* JAVADOC_END javaClassOrInterface
+    : javaDocStart classTag* JAVADOC_END javaClassOrInterface
     ;
 
 javaFieldDoc
-    : JAVADOC_START description? fieldTag* JAVADOC_END javaMethod
+    : javaDocStart fieldTag* JAVADOC_END javaMethod
     ;
 
-javaConstrutorDoc
-    : JAVADOC_START description? methodOrConstructorTag* JAVADOC_END javaConstrutor
+javaConstructorDoc
+    : javaDocStart methodOrConstructorTag* JAVADOC_END javaConstructor
     ;
 
 javaMethodDoc
-    : JAVADOC_START description? (methodTag | methodOrConstructorTag)* JAVADOC_END javaMethod
+    : javaDocStart (methodTag | methodOrConstructorTag)* JAVADOC_END javaMethod
     ;
 
 insideClassDoc
     : javaClassDoc
     | javaFieldDoc
-    | javaConstrutorDoc
+    | javaConstructorDoc
     | javaMethodDoc
+    ;
+
+javaDocStart
+    : JAVADOC_START description?
     ;
 
 // =================================================
 
 // =============== Not Documented ==================
 javaClassOrInterface
-    : annotation* ACCESSMODS? modifier? (CLASS | INTERFACE) type polymorphy? BRACE_OPEN (insideClassDoc | javaClassOrInterface | javaField | javaMethod | javaConstrutor)* BRACE_CLOSE
+    : annotation* ACCESSMODS? modifier? (CLASS | INTERFACE) NAME polymorphy? BRACE_OPEN (insideClassDoc | javaClassOrInterface | javaField | javaMethod | javaConstructor)* BRACE_CLOSE
     ;
 
 javaField
     : annotation* ACCESSMODS? modifier? type NAME skipCodeToSemi
     ;
 
-javaConstrutor
-    : annotation* ACCESSMODS? FUNC_NAME javaParams block
+javaConstructor
+    : annotation* ACCESSMODS? FUNC_NAME javaParams throwing? block
     ;
 
 // TODO: '...' Operator bei Parametern unterstützen
 javaMethod
-    : annotation* ACCESSMODS? modifier? type FUNC_NAME javaParams (SEMI | block)
+    : annotation* ACCESSMODS? modifier? type FUNC_NAME javaParams throwing? (SEMI | block)
     ;
 
 // ================================================
@@ -69,7 +73,15 @@ modifier
     ;
 
 javaParams
-    : (type NAME (COMMA type NAME)*)? PARATHESES_CLOSE
+    : (javaParam (COMMA javaParam)*)? PARATHESES_CLOSE
+    ;
+
+javaParam
+    : type NAME
+    ;
+
+throwing
+    : THROWS typeName (COMMA typeName)*
     ;
 
 polymorphy
@@ -205,18 +217,18 @@ fieldTag
     | SERIAL_FIELD
     ;
 
+
 methodOrConstructorTag
-    : SEE
-    | SINCE
-    | DEPRECATED
-    | PARAM NAME NAME+
-    | THROWS
-    | EXCEPTION
-    | SERIAL_DATA
+    : SEE                       # See
+    | SINCE                     # Since
+    | DEPRECATED                # Deprecated
+    | PARAM NAME NAME+          # Params
+    | EXCEPTION typeName NAME+     # Throws
+    | SERIAL_DATA               # SerialData
     ;
 
 methodTag
-    :  RETURN
+    :  RETURN NAME+
     ;
 
 // =====================================================

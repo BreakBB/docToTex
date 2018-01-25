@@ -2,6 +2,7 @@ package examples;
 
 import com.sun.org.glassfish.gmbal.Description;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,6 +31,14 @@ public class SimpleExampleWithClass extends Object implements Serializable{
     public static abstract class My22Class implements Runnable {
         abstract int getx();
 
+        /**
+         *
+         * @throws IOException asdasd
+         */
+        My22Class() throws IOException {
+            throw new IOException();
+        }
+
         @com.sun.org.glassfish.gmbal.Description("Here my value" +
                 "over multiple" +
                 "lines")
@@ -43,8 +52,10 @@ public class SimpleExampleWithClass extends Object implements Serializable{
      * noch mehr Doku
      * @param a sind halt da
      * @param b asoijdaoijd
+     * @param c aisjdoiajsdoi
+     * @return asd
      */
-    public static void myMethod(ArrayList<HashMap<My22Class, Integer[]>> a, int b) {
+    public static void myMethod(ArrayList<HashMap<My22Class, Integer[]>> a, int b, String d) {
         int x;
 
         {

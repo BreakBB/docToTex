@@ -34,6 +34,10 @@ IMPLEMENTS
     : 'implements'
     ;
 
+THROWS
+    : 'throws'
+    ;
+
 PACKAGE
     : 'package'
     ;
@@ -132,12 +136,8 @@ RETURN
     : NEWLINE SPACE* AT 'return'
     ;
 
-THROWS
-    : NEWLINE SPACE* AT 'throws'
-    ;
-
 EXCEPTION
-    : NEWLINE SPACE* AT 'exception'
+    : NEWLINE SPACE* AT ('throws' | 'exception')
     ;
 
 INLINE_CODE
@@ -185,7 +185,7 @@ COMMENT
     ;
 
 BLOCK_COMMENT
-    : '/*' .*? '*/' ->skip
+    : '/*' {_input.LA(1) != '*'}? .*? '*/' ->skip
     ;
 
 BRACE_OPEN
