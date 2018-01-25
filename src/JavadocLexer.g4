@@ -39,7 +39,7 @@ PACKAGE
     ;
 
 IMPORT
-    : 'import' /* ~';' SEMI ->skip */
+    : 'import' .*? SEMI ->skip
     ;
 
 COMMA
@@ -184,7 +184,9 @@ COMMENT
     : '//'+ ~[\n\r]* NEWLINE ->skip
     ;
 
-// TODO: skip Block comments
+BLOCK_COMMENT
+    : '/*' .*? '*/' ->skip
+    ;
 
 BRACE_OPEN
 	: '{'

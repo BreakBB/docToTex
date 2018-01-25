@@ -2,14 +2,13 @@ parser grammar JavadocParser;
 
 options { tokenVocab=JavadocLexer; }
 
-
-// TODO: package und imports zu Beginn skippen
 // TODO: Anonyme innere Klassen
 // TODO: HTML evtl. unterstützen
+// TODO: Tags erweitern mit gültigem Content
 
 documentation
 	: EOF
-	| javaPackage? imports* (javaClassDoc | javaClassOrInterface) EOF
+	| javaPackage? (javaClassDoc | javaClassOrInterface) EOF
 	;
 
 // =============== Documented ======================
@@ -69,8 +68,6 @@ modifier
     | ABSTRACT STATIC
     ;
 
-// TODO: Include Array, Genertics
-
 javaParams
     : (type NAME (COMMA type NAME)*)? PARATHESES_CLOSE
     ;
@@ -110,10 +107,6 @@ annotation
 
 javaPackage
     : PACKAGE typeName SEMI
-    ;
-
-imports
-    : IMPORT typeName SEMI
     ;
 
 // ===============================================
@@ -244,10 +237,4 @@ skipCodeToParatheses
 
 skipToQuote
     : ~QUOTE* QUOTE
-    ;
-
-
-//TODO: skipCode fuer falsche Token,die zu Fehler fuehren
-skipCode
-    : .
     ;

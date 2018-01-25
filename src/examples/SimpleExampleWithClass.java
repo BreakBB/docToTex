@@ -19,6 +19,13 @@ public class SimpleExampleWithClass extends Object implements Serializable{
         iasjdoi += 4;
     }
 
+    /*
+    Here is
+    a multiline
+    block comment
+     */
+    /* and some inline block comment */
+
     @Description(key = "Here some ( fancy description", value = "asd'a)sdasd")
     public static abstract class My22Class implements Runnable {
         abstract int getx();
