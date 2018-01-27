@@ -8,16 +8,17 @@ public class Documentation {
     private ArrayList<String> throwing;
     private boolean returns;
 
+    private String description;
+    private ArrayList<Tag> inlineTags;
+    private ArrayList<Tag> tags;
+
     public Documentation() {
         this.params = new ArrayList<>();
         this.throwing = new ArrayList<>();
         this.returns = false;
-    }
 
-    public Documentation(Documentation doc){
-        this.params = doc.getParams();
-        this.throwing = doc.getThrows();
-        this.returns = doc.getReturns();
+        this.inlineTags = new ArrayList<>();
+        this.tags = new ArrayList<>();
     }
 
     public ArrayList<String> getParams() {
@@ -42,5 +43,28 @@ public class Documentation {
 
     public void setReturns() {
         this.returns = true;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public ArrayList<Tag> getInlineTags() {
+        return inlineTags;
+    }
+
+    public void addInlineTags(Tag inlineTag) {
+        this.inlineTags.add(inlineTag);
+    }
+
+    public ArrayList<Tag> getTags() {
+        return tags;
+    }
+
+    public void addTags(Tag tag) {
+        this.tags.add(tag);
     }
 }

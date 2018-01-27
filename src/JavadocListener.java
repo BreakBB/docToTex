@@ -1,6 +1,8 @@
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
@@ -12,12 +14,37 @@ public class JavadocListener extends JavadocParserBaseListener{
 
     private Documentation currentDoc;
     private HashMap<ParserRuleContext, Documentation> classDocs = new HashMap<>();
+    private static String docTitle;
+    private LaTexGenerator gen;
+
+    @Override public void enterDocStart(JavadocParser.DocStartContext ctx){
+        gen = new LaTexGenerator(docTitle);
+    }
+
+    @Override public void exitDocStart(JavadocParser.DocStartContext ctx){
+        gen.closeWriter();
+    }
+
+    @Override public void exitDocText(JavadocParser.DocTextContext ctx){
+        currentDoc.setDescription(addWhiteSpace(currentDoc.getDescription(), ctx.getText()));
+    }
+
+    @Override public void exitInlineTag(JavadocParser.InlineTagContext ctx){
+        JavadocParser.InlineTagContentContext inlineTagContentContext = ctx.inlineTagContent();
+        String text = inlineTagContentContext == null ? "" : inlineTagContentContext.getText();
+
+        currentDoc.addInlineTags(new Tag(ctx.inlineTagName().getText(), text));
+
+        String desc = currentDoc.getDescription();
+        currentDoc.setDescription(desc == null? "{*/}" : desc + " " + "{*/}");
+    }
+
+    private String addWhiteSpace(String old, String add){
+        return old == null? add : old + " " + add;
+    }
 
     @Override public void enterJavaDocStart(JavadocParser.JavaDocStartContext ctx){
         currentDoc = new Documentation();
-    }
-
-    @Override public void enterDocumentation(JavadocParser.DocumentationContext ctx){
     }
 
     @Override public void exitParams(JavadocParser.ParamsContext ctx){
@@ -120,29 +147,52 @@ public class JavadocListener extends JavadocParserBaseListener{
         }
     }
 
-    @Override
-    public void enterJavaClassOrInterface(JavadocParser.JavaClassOrInterfaceContext ctx){
-        if(currentDoc != null){
-            classDocs.put(ctx, new Documentation(currentDoc));
-            currentDoc = null;
-        }
-        else{
-            classDocs.put(ctx, null);
-        }
-    }
-
-    @Override
-    public void exitJavaClassOrInterface(JavadocParser.JavaClassOrInterfaceContext ctx){
-
+    @Override public void exitJavaClassOrInterfaceDef(JavadocParser.JavaClassOrInterfaceDefContext ctx) {
         String type = ctx.INTERFACE() == null ? "Klasse" : "Interface";
         String name = ctx.NAME().getText();
 
-        if(classDocs.get(ctx) == null){
+        if(currentDoc == null){
             System.out.println("WRN: Fehlendes Javadoc für " + type + " <" + name + ">");
         }
         else{
+            if(ctx.annotation() != null){
+                for(JavadocParser.AnnotationContext item : ctx.annotation()){
+                    if(item != null && item.skipCodeToParatheses() != null){
+                        skipCodeToParatheses(item.skipCodeToParatheses());
+                    }
+                }
+            }
+
+            gen.writeClassOrInterface()
             currentDoc = null;
         }
+    }
+
+    private String skipCodeToParatheses(JavadocParser.SkipCodeToParathesesContext ctx) {
+        String text = null;
+
+        for (JavadocParser.NoQuoteOrPcloseContext item : ctx.noQuoteOrPclose()){
+            text = addWhiteSpace(text, item.getText());
+        }
+
+        if(ctx.skipToQuote() != null){
+            text += "\"";
+
+            text += skipCodeToQuote(ctx.skipToQuote());
+            text += skipCodeToParatheses(ctx.skipCodeToParatheses());
+        }
+
+        return text + ")";
+    }
+
+    private String skipCodeToQuote(JavadocParser.SkipToQuoteContext ctx) {
+        String text = null;
+
+        for (JavadocParser.NotQuoteContext item : ctx.notQuote()){
+            text = addWhiteSpace(text, item.getText());
+        }
+
+        return text + "\"";
     }
 
     @Override
@@ -161,7 +211,13 @@ public class JavadocListener extends JavadocParserBaseListener{
 
 
     public static void main(String[] args) throws Exception {
-        JavadocLexer lexer = new JavadocLexer(CharStreams.fromStream(new FileInputStream("src/examples/SimpleExampleWithClass.java")));
+
+        String path = "src/examples/SimpleExampleWithClass.java";
+
+        FileInputStream inStream = new FileInputStream(path);
+        docTitle = path.replaceAll("^.*/", "").replaceAll("\\..*$", "");
+
+        JavadocLexer lexer = new JavadocLexer(CharStreams.fromStream(inStream));
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         JavadocParser parser = new JavadocParser(tokens);
 

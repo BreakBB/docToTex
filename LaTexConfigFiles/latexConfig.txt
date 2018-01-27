@@ -1,0 +1,57 @@
+\documentclass[12pt]{scrreprt}
+
+%Seitenabstände anpassen: oben-unten-links-rechts: 2,5cm, 2,5cm, 3cm, 2cm.
+\usepackage{geometry}
+\geometry{a4paper,tmargin=25mm,bmargin=25mm,lmargin=25mm,rmargin=25mm}
+
+%Zeilenabstand anpassen: 1,5
+\usepackage[onehalfspacing]{setspace}
+
+\usepackage[utf8]{inputenc}
+\usepackage{german}
+\usepackage{parskip}
+\usepackage{hyperref}
+
+% Kopf- und Fußzeilen setzen
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\fancyhead[R]{\textit{\nouppercase{\rightmark}}}
+\fancyfoot[C]{\thepage}
+
+% Die Farbe von Zitatverlinkungen auf "Blau" setzen
+\hypersetup{
+ colorlinks=true,
+ citecolor=blue,
+ linkcolor=black,
+ urlcolor=blue
+}
+
+% Dokumenttitel
+\title{$%$title$%$}
+\date{Dokument erstellt am: \today}
+
+
+% Die Überschrift des Inhaltsverzeichnisses ändern
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
+
+% Start des Dokumentes
+\begin{document}
+\pagenumbering{gobble}
+
+\maketitle
+\newpage
+
+\pagenumbering{Roman}
+
+\addcontentsline{toc}{chapter}{Inhaltsverzeichnis}
+\tableofcontents
+\newpage
+
+% Das hier ist für den Wechsel zwischen römischen und arabischen
+% Zahlen bei der Seitenzählung
+\setcounter{page}{0}
+\pagenumbering{arabic}
+
+
+%Start des Inhaltes

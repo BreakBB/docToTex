@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * oiajsdoijasd {@inheritDoc (){!"§&() @asidjo /** § } @param { /*** '# $!"[]}²³1234\\1237^8...♥
+ * oiajsdoijasd {@inheritDoc} (){!"§() @asidjo /** § } @param { /*** '# $!"[]}²³1234\\1237^8...♥
  *          @author my n{}[]**~ame, your name
  */
 public class SimpleExampleWithClass extends Object implements Serializable{
@@ -52,8 +52,6 @@ public class SimpleExampleWithClass extends Object implements Serializable{
      * noch mehr Doku
      * @param a sind halt da
      * @param b asoijdaoijd
-     * @param c aisjdoiajsdoi
-     * @return asd
      */
     public static void myMethod(ArrayList<HashMap<My22Class, Integer[]>> a, int b, String d) {
         int x;
@@ -74,4 +72,8 @@ public class SimpleExampleWithClass extends Object implements Serializable{
         String   [] f ;
         return new ArrayList<String>();
     }
+}
+
+class AnotherClass {
+
 }

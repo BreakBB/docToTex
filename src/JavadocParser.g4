@@ -8,8 +8,12 @@ options { tokenVocab=JavadocLexer; }
 
 documentation
 	: EOF
-	| javaPackage? (javaClassDoc | javaClassOrInterface) EOF
+	| docStart EOF
 	;
+
+docStart
+    : javaPackage? (javaClassDoc | javaClassOrInterface)+
+    ;
 
 // =============== Documented ======================
 javaClassDoc
@@ -43,7 +47,11 @@ javaDocStart
 
 // =============== Not Documented ==================
 javaClassOrInterface
-    : annotation* ACCESSMODS? modifier? (CLASS | INTERFACE) NAME polymorphy? BRACE_OPEN (insideClassDoc | javaClassOrInterface | javaField | javaMethod | javaConstructor)* BRACE_CLOSE
+    : javaClassOrInterfaceDef BRACE_OPEN (insideClassDoc | javaClassOrInterface | javaField | javaMethod | javaConstructor)* BRACE_CLOSE
+    ;
+
+javaClassOrInterfaceDef
+    : annotation* ACCESSMODS? modifier? (CLASS | INTERFACE) NAME polymorphy?
     ;
 
 javaField
@@ -223,7 +231,7 @@ methodOrConstructorTag
     | SINCE                     # Since
     | DEPRECATED                # Deprecated
     | PARAM NAME NAME+          # Params
-    | EXCEPTION typeName NAME+     # Throws
+    | EXCEPTION typeName NAME+  # Throws
     | SERIAL_DATA               # SerialData
     ;
 
@@ -244,9 +252,17 @@ skipToBrace
     ;
 
 skipCodeToParatheses
-    : ~(PARATHESES_CLOSE | QUOTE)* ((QUOTE skipToQuote skipCodeToParatheses) | PARATHESES_CLOSE)
+    : noQuoteOrPclose* ((QUOTE skipToQuote skipCodeToParatheses) | PARATHESES_CLOSE)
+    ;
+
+noQuoteOrPclose
+    : ~(PARATHESES_CLOSE | QUOTE)
     ;
 
 skipToQuote
-    : ~QUOTE* QUOTE
+    : notQuote* QUOTE
+    ;
+
+notQuote
+    : ~QUOTE
     ;
