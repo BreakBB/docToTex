@@ -51,11 +51,11 @@ javaClassOrInterface
     ;
 
 javaClassOrInterfaceDef
-    : annotation* ACCESSMODS? modifier? (CLASS | INTERFACE) NAME polymorphy?
+    : annotation* ACCESSMODS? modifier* (CLASS | INTERFACE) NAME polymorphy*
     ;
 
 javaField
-    : annotation* ACCESSMODS? modifier? type NAME skipCodeToSemi
+    : annotation* ACCESSMODS? modifier* type NAME skipCodeToSemi
     ;
 
 javaConstructor
@@ -64,20 +64,17 @@ javaConstructor
 
 // TODO: '...' Operator bei Parametern unterstützen
 javaMethod
-    : annotation* ACCESSMODS? modifier? type FUNC_NAME javaParams throwing? (SEMI | block)
+    : annotation* ACCESSMODS? modifier* type FUNC_NAME javaParams throwing? (SEMI | block)
     ;
 
 // ================================================
 
 // ============== Modifier and more ===============
+
 modifier
     : STATIC
     | FINAL
     | ABSTRACT
-    | FINAL STATIC
-    | STATIC FINAL
-    | STATIC ABSTRACT
-    | ABSTRACT STATIC
     ;
 
 javaParams
@@ -93,9 +90,13 @@ throwing
     ;
 
 polymorphy
-    : javaExtends javaImplements
-    | javaImplements
+    : javaImplements
     | javaExtends
+    ;
+
+classType
+    : CLASS
+    | INTERFACE
     ;
 
 type

@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 // TODO: Evtl auf Stringbuilder / String.format umändern
 
@@ -155,17 +156,28 @@ public class JavadocListener extends JavadocParserBaseListener{
             System.out.println("WRN: Fehlendes Javadoc für " + type + " <" + name + ">");
         }
         else{
+            String annotation="";
             if(ctx.annotation() != null){
                 for(JavadocParser.AnnotationContext item : ctx.annotation()){
                     if(item != null && item.skipCodeToParatheses() != null){
-                        skipCodeToParatheses(item.skipCodeToParatheses());
+                       annotation = skipCodeToParatheses(item.skipCodeToParatheses());
                     }
                 }
             }
+            String accessmod = ctx.ACCESSMODS()==null? "public": ctx.ACCESSMODS().getText();
+            String modifier = readMultipleItems(ctx.modifier());
 
-            gen.writeClassOrInterface()
+            gen.writeClassOrInterface(accessmod, modifier, type,name);
             currentDoc = null;
         }
+    }
+
+    private String readMultipleItems(List<ParserRuleContext> ctx){
+        String items = null;
+        for (ParserRuleContext item : ctx){
+            items = addWhiteSpace(items, item.getText());
+        }
+        return items;
     }
 
     private String skipCodeToParatheses(JavadocParser.SkipCodeToParathesesContext ctx) {
