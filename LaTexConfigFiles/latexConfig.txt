@@ -7,10 +7,10 @@
 %Zeilenabstand anpassen: 1,5
 \usepackage[onehalfspacing]{setspace}
 
-\usepackage[utf8]{inputenc}
-\usepackage{german}
+\usepackage[utf8x]{inputenc}
 \usepackage{parskip}
 \usepackage{hyperref}
+\usepackage{fancyhdr}
 
 % Kopf- und Fußzeilen setzen
 \pagestyle{fancy}
@@ -29,6 +29,7 @@
 
 % Dokumenttitel
 \title{$%$title$%$}
+\subtitle{$%$package$%$}
 \date{Dokument erstellt am: \today}
 
 

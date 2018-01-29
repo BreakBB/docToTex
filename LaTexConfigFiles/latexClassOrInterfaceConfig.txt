@@ -1,0 +1,13 @@
+\(*/section){(*/sectionName)}
+\label{(*/label)}
+
+(*/annotations)
+
+
+(*/classDescription)
+
+
+(*/javaDoc)
+
+
+(*/tags)

@@ -1,0 +1,209 @@
+\documentclass[12pt]{scrreprt}
+
+%Seitenabstände anpassen: oben-unten-links-rechts: 2,5cm, 2,5cm, 3cm, 2cm.
+\usepackage{geometry}
+\geometry{a4paper,tmargin=25mm,bmargin=25mm,lmargin=25mm,rmargin=25mm}
+
+%Zeilenabstand anpassen: 1,5
+\usepackage[onehalfspacing]{setspace}
+
+\usepackage[utf8x]{inputenc}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+
+% Kopf- und Fußzeilen setzen
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{15pt}
+\fancyhead[R]{\textit{\nouppercase{\rightmark}}}
+\fancyfoot[C]{\thepage}
+
+% Die Farbe von Zitatverlinkungen auf "Blau" setzen
+\hypersetup{
+ colorlinks=true,
+ citecolor=blue,
+ linkcolor=black,
+ urlcolor=blue
+}
+
+% Dokumenttitel
+\title{SimpleExample}
+\subtitle{package: examples}
+\date{Dokument erstellt am: \today}
+
+
+% Die Überschrift des Inhaltsverzeichnisses ändern
+\renewcommand{\contentsname}{Inhaltsverzeichnis}
+
+% Start des Dokumentes
+\begin{document}
+\pagenumbering{gobble}
+
+\maketitle
+\newpage
+
+\pagenumbering{Roman}
+
+\addcontentsline{toc}{chapter}{Inhaltsverzeichnis}
+\tableofcontents
+\newpage
+
+% Das hier ist für den Wechsel zwischen römischen und arabischen
+% Zahlen bei der Seitenzählung
+\setcounter{page}{0}
+\pagenumbering{arabic}
+
+
+%Start des Inhaltes
+\chapter{class SimpleExample}
+\label{examples.SimpleExample}
+
+
+
+
+public class SimpleExample extends AnotherClass implements Runnable
+
+
+This is a very basic description of an outer Java - class . It contains absolutely no special characters , except for these : \{ \} ( ) [ ] © ²³ \textbackslash [ T ] / . Those special characters are escaped and don ' t result in a LaTex conflict .
+
+
+\textbf{@see:}
+
+\quad\quad\hyperref[examples.SimpleExample.My22Class:getx]{text}
+
+\section{Methode run}
+\label{examples.SimpleExample:run}
+
+
+
+
+public void run()
+
+
+This method is here to have an " implements " in the class signature and doesn ' t do anything else .
+
+
+
+\section{Methode getAllNames}
+\label{examples.SimpleExample:getAllNames}
+
+
+
+
+protected ArrayList\textless String\textgreater  getAllNames()
+
+
+
+
+
+
+\section{Methode setFavoriteName}
+\label{examples.SimpleExample:setFavoriteName}
+
+
+
+
+public void setFavoriteName(String name)
+
+
+This method can be used to set your favorite name
+
+
+
+\section{Methode main}
+\label{examples.SimpleExample:main}
+
+
+
+
+public static void main(String[] args)
+
+
+Here is our main method which doesn ' t make much sense , but includes a parameter .
+
+
+
+\section{class My22Class}
+\label{examples.SimpleExample.My22Class}
+
+@Description(key ="description", value ="Some fancy text to show this strange description annotation which is"+"added to Javadoc")
+
+
+
+public static abstract class My22Class
+
+
+
+
+
+
+\subsection{Methode getx}
+\label{examples.SimpleExample.My22Class:getx}
+
+
+
+
+ abstract int getx(String a)
+
+
+
+
+
+
+\subsection{Methode coolMethod}
+\label{examples.SimpleExample.My22Class:coolMethod}
+
+@com.sun.org.glassfish.gmbal.Description("Here my value"+"over multiple lines to show an even stranger annotation")
+
+
+
+public void coolMethod(int x, int y, String a, HashMap\textless Integer,String\textgreater  map)
+
+
+This method is to show a long list of params in combination with an annotation following the Javadoc
+
+
+
+\section{Methode myMethod}
+\label{examples.SimpleExample:myMethod}
+
+
+
+
+public static void myMethod(ArrayList\textless HashMap\textless My22Class,Integer[]\textgreater \textgreater  a, int b, String notDocumented)
+
+
+This method has some more " logic " included to show that everything inside of a method is skipped . Moreover there is the parameter " notDocumented " which isn ' t listed in the Javadoc params .
+
+
+
+\section{Methode anotherMethod}
+\label{examples.SimpleExample:anotherMethod}
+
+
+
+
+public ArrayList\textless String\textgreater  anotherMethod(String[] a, int b)
+
+
+
+
+
+
+\chapter{class AnotherClass}
+\label{examples.AnotherClass}
+
+
+
+
+ class AnotherClass
+
+
+
+
+
+
+
+
+\end{document}

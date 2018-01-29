@@ -21,7 +21,7 @@ javaClassDoc
     ;
 
 javaFieldDoc
-    : javaDocStart fieldTag* JAVADOC_END javaMethod
+    : javaDocStart fieldTag* JAVADOC_END javaField
     ;
 
 javaConstructorDoc
@@ -90,8 +90,8 @@ throwing
     ;
 
 polymorphy
-    : javaImplements
-    | javaExtends
+    : IMPLEMENTS typeName (COMMA typeName)*
+    | EXTENDS typeName
     ;
 
 classType
@@ -100,20 +100,12 @@ classType
     ;
 
 type
-    : typeName (BRACKETS | (ANGLE_BRACKET_OPEN type (COMMA type)* ANGLE_BRACKET_CLOSE))*
+    : typeName (BRACKET_OPEN BRACKET_CLOSE | (ANGLE_BRACKET_OPEN type (COMMA type)* ANGLE_BRACKET_CLOSE))*
     ;
 
 typeName
     : TYPE_NAME
     | NAME
-    ;
-
-javaExtends
-    : EXTENDS typeName
-    ;
-
-javaImplements
-    : IMPLEMENTS typeName (COMMA typeName)*
     ;
 
 // ===============================================
@@ -152,10 +144,12 @@ docText
     | COMMA
     | SEMI
     | AT
+    | HASHTAG
     | DOT
     | QUOTE
     | SINGLE_QUOTE
     | FUNC_NAME
+    | SEE_REF
     | TYPE_NAME
     | NAME
     | STAR
@@ -165,7 +159,8 @@ docText
     | BRACE_CLOSE
     | PARATHESES_OPEN
     | PARATHESES_CLOSE
-    | BRACKETS
+    | BRACKET_OPEN
+    | BRACKET_CLOSE
     | ANGLE_BRACKET_OPEN
     | ANGLE_BRACKET_CLOSE
     | TEXT_CONTENT
@@ -208,32 +203,38 @@ braceText
 
 // ============= Documented Tags ==================
 
+tag
+    : SEE (typeName | SEE_REF) classTagEnd*    # See
+    | SINCE classTagEnd+                       # Since
+    | DEPRECATED classTagEnd+                  # Deprecated
+    ;
+
 classTag
-    : AUTHOR ~(JAVADOC_END | COMMA)+ (COMMA ~JAVADOC_END+)*
-    | DATE
-    | DEPRECATED
-    | SEE
-    | SERIAL
-    | SINCE
-    | VERSION
+    : AUTHOR classTagEnd+
+    | SERIAL classTagEnd+
+    | VERSION classTagEnd+
+    | tag
+    ;
+
+classTagEnd
+    : ~(JAVADOC_END | SERIAL | VERSION | SEE | SINCE | DEPRECATED)
     ;
 
 fieldTag
-    : SEE
-    | SINCE
-    | DEPRECATED
-    | SERIAL
+    : SERIAL
     | SERIAL_FIELD
+    | tag
     ;
 
-
 methodOrConstructorTag
-    : SEE                       # See
-    | SINCE                     # Since
-    | DEPRECATED                # Deprecated
-    | PARAM NAME NAME+          # Params
-    | EXCEPTION typeName NAME+  # Throws
-    | SERIAL_DATA               # SerialData
+    : PARAM NAME methodOrConstructorTagEnd+         # Params
+    | EXCEPTION typeName methodOrConstructorTagEnd+ # Throws
+    | SERIAL_DATA                                   # SerialData
+    | tag                                           # TagTag
+    ;
+
+methodOrConstructorTagEnd
+    : ~(JAVADOC_END | PARAM | EXCEPTION | SERIAL_DATA | SEE | SINCE | DEPRECATED)
     ;
 
 methodTag

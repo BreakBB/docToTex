@@ -43,7 +43,7 @@ PACKAGE
     ;
 
 IMPORT
-    : 'import' .*? SEMI ->skip
+    : 'import' SPACE NAME (DOT NAME)* SEMI ->skip
     ;
 
 COMMA
@@ -57,6 +57,10 @@ SEMI
 AT
 	: '@'
 	;
+
+HASHTAG
+    : '#'
+    ;
 
 DOT
     : '.'
@@ -72,6 +76,10 @@ SINGLE_QUOTE
 
 FUNC_NAME
     : NAME (SPACE | NEWLINE)* PARATHESES_OPEN
+    ;
+
+SEE_REF
+    : TYPE_NAME HASHTAG NAME
     ;
 
 TYPE_NAME
@@ -204,8 +212,12 @@ PARATHESES_CLOSE
     : ')'
     ;
 
-BRACKETS
-    : '[' SPACE* ']'
+BRACKET_OPEN
+    : '['
+    ;
+
+BRACKET_CLOSE
+    : ']'
     ;
 
 ANGLE_BRACKET_OPEN
