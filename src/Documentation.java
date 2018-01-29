@@ -1,12 +1,13 @@
 import org.antlr.v4.runtime.ParserRuleContext;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Documentation {
 
-    private ArrayList<String> params;
-    private ArrayList<String> throwing;
-    private boolean returns;
+    private ArrayList<Tag> params;
+    private ArrayList<Tag> throwing;
+    private Tag returns;
 
     private String description;
     private ArrayList<Tag> inlineTags;
@@ -15,34 +16,33 @@ public class Documentation {
     public Documentation() {
         this.params = new ArrayList<>();
         this.throwing = new ArrayList<>();
-        this.returns = false;
 
         this.inlineTags = new ArrayList<>();
         this.tags = new ArrayList<>();
     }
 
-    public ArrayList<String> getParams() {
+    public ArrayList<Tag> getParams() {
         return params;
     }
 
-    public void addParam(String s){
-        this.params.add(s);
+    public void addParam(Tag newTag){
+        this.params.add(newTag);
     }
 
-    public ArrayList<String> getThrows() {
+    public ArrayList<Tag> getThrows() {
         return throwing;
     }
 
-    public void addThrows(String s){
-        this.throwing.add(s);
+    public void addThrows(Tag newTag){
+        this.throwing.add(newTag);
     }
 
-    public boolean getReturns() {
+    public Tag getReturns() {
         return returns;
     }
 
-    public void setReturns() {
-        this.returns = true;
+    public void setReturns(Tag newTag) {
+        this.returns = newTag;
     }
 
     public String getDescription() {

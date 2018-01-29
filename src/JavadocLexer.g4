@@ -43,7 +43,7 @@ PACKAGE
     ;
 
 IMPORT
-    : 'import' SPACE NAME (DOT NAME)* SEMI ->skip
+    : 'import' SPACE+ NAME (DOT NAME)* SEMI ->skip
     ;
 
 COMMA

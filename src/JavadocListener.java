@@ -1,9 +1,9 @@
-import javafx.util.Pair;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 // TODO: Evtl auf Stringbuilder / String.format umändern
@@ -11,7 +11,6 @@ import java.util.List;
 public class JavadocListener extends JavadocParserBaseListener {
 
     private Documentation currentDoc;
-    private ArrayList<Pair<String, String>> currentParams = null;
     private String hierarchy = "";
     private static String docTitle;
     private static String packageName = "";
@@ -39,7 +38,7 @@ public class JavadocListener extends JavadocParserBaseListener {
         JavadocParser.InlineTagContentContext inlineTagContentContext = ctx.inlineTagContent();
         String text = inlineTagContentContext == null ? "" : inlineTagContentContext.getText();
 
-        currentDoc.addInlineTags(new Tag(ctx.inlineTagName().getText(), text, null));
+        currentDoc.addInlineTags(new Tag(ctx.inlineTagName().getText(), null, text, null));
 
         String desc = currentDoc.getDescription();
         currentDoc.setDescription(desc == null ? "{*/}" : desc + " " + "{*/}");
@@ -50,11 +49,15 @@ public class JavadocListener extends JavadocParserBaseListener {
         String typeName = ctx.typeName() == null ? ctx.SEE_REF().getText() : ctx.typeName().getText();
         String name = ctx.classTagEnd().isEmpty() ? typeName : readMultipleRules(ctx.classTagEnd());
 
-        currentDoc.addTags(new Tag(ctx.SEE().getText(), name, typeName.replace("#", ":")));
+        currentDoc.addTags(new Tag(ctx.SEE().getText(), null, name, typeName.replace("#", ":")));
     }
 
+    //TODO: Leerzeichen prüfen, dass es an der richigen Stelle eingefügt wird
     private String addWhiteSpace(String old, String add) {
-        return old == null || old.isEmpty() ? add : old + " " + add;
+        if(add.matches("^.*[a-zA-Z0-9].*$")){
+            return old == null || old.isEmpty() ? add : old + " " + add;
+        }
+        return old == null || old.isEmpty() ? add : old + add;
     }
 
     @Override
@@ -64,20 +67,24 @@ public class JavadocListener extends JavadocParserBaseListener {
 
     @Override
     public void exitParams(JavadocParser.ParamsContext ctx) {
-
-        currentDoc.addParam(ctx.NAME().getText());
+        currentDoc.addParam(new Tag(ctx.PARAM().getText(), ctx.NAME().getText(), readMultipleRules(ctx.methodOrConstructorTagEnd()), null));
     }
 
     @Override
     public void exitThrows(JavadocParser.ThrowsContext ctx) {
 
-        currentDoc.addThrows(ctx.typeName().getText());
+        currentDoc.addThrows(new Tag(ctx.EXCEPTION().getText(), ctx.typeName().getText(), readMultipleRules(ctx.methodOrConstructorTagEnd()), null));
     }
 
     @Override
     public void exitMethodTag(JavadocParser.MethodTagContext ctx) {
 
-        currentDoc.setReturns();
+        String name = ctx.NAME(0).getText();
+        if(currentDoc.getReturns() != null){
+            System.err.println("ERR: Eine Methode kann nur einen Rückgabewert haben: <" + currentDoc.getReturns().getTagName() + "> wird mit <" + name + "> überschrieben!");
+        }
+
+        currentDoc.setReturns(new Tag(ctx.RETURN().getText(), name, readMultipleToken(ctx.NAME().subList(1, ctx.NAME().size() - 1)), null));
     }
 
     @Override
@@ -95,15 +102,15 @@ public class JavadocListener extends JavadocParserBaseListener {
             currentDoc = new Documentation();
         }
         else {
-            if ("void".equals(methodType) && currentDoc.getReturns()) {
+            if ("void".equals(methodType) && currentDoc.getReturns() != null) {
                 System.err.println("ERR: @return im Javadoc für void-Methode <" + methodName + ">");
-            } else if (!"void".equals(methodType) && !currentDoc.getReturns()) {
+            } else if (!"void".equals(methodType) && currentDoc.getReturns() == null) {
                 System.out.println("WRN: Fehlendes @return für Methode <" + methodName + "> mit Returntype <" + methodType + ">");
             }
             String root = "Methode";
 
             // Param
-            checkParams(methodName, currentDoc.getParams(), ctx.javaParams(), root);
+            checkParams(methodName, ctx.javaParams(), root);
 
             // Throws
             checkThrows(methodName, ctx.throwing(), root);
@@ -118,19 +125,20 @@ public class JavadocListener extends JavadocParserBaseListener {
 
         String modifier = readMultipleRules(ctx.modifier());
 
+        HashMap<String, String> currentParams = getParams(ctx.javaParams().javaParam());
+
         gen.writeMethod(level, hierarchy + ":" + methodName, annotation, accessmod, modifier, methodType, methodName, currentParams, currentDoc);
 
-        currentParams = null;
         currentDoc = null;
     }
 
-    @Override public void exitJavaParam(JavadocParser.JavaParamContext ctx){
-        currentParams.add(new Pair<>(ctx.type().getText(), ctx.NAME().getText()));
-    }
+    private HashMap<String, String> getParams(List<JavadocParser.JavaParamContext> ctx) {
+        HashMap<String, String> map = new HashMap<>();
+        for(JavadocParser.JavaParamContext item : ctx){
+            map.put(item.NAME().getText(), item.type().getText());
+        }
 
-    @Override
-    public void enterJavaParams(JavadocParser.JavaParamsContext ctx) {
-        currentParams = new ArrayList<>();
+        return map;
     }
 
     private String readAnnotations(List<JavadocParser.AnnotationContext> ctx) {
@@ -141,7 +149,6 @@ public class JavadocListener extends JavadocParserBaseListener {
             annotations.append("@").append(funcName == null ? item.typeName().getText() + "(" : funcName.getText());
 
             if (item.skipCodeToParatheses() != null) {
-                System.out.println("SKIP: " + skipCodeToParatheses(item.skipCodeToParatheses()));
                 annotations.append(skipCodeToParatheses(item.skipCodeToParatheses())).append(")").append("\n");
             }
         }
@@ -161,7 +168,7 @@ public class JavadocListener extends JavadocParserBaseListener {
             String root = "Konstruktor";
 
             // Param
-            checkParams(methodName, currentDoc.getParams(), ctx.javaParams(), root);
+            checkParams(methodName, ctx.javaParams(), root);
 
             // Throws
             checkThrows(methodName, ctx.throwing(), root);
@@ -171,8 +178,6 @@ public class JavadocListener extends JavadocParserBaseListener {
     }
 
     private void checkThrows(String methodName, JavadocParser.ThrowingContext throwing, String root) {
-        ArrayList<String> docThrows = currentDoc.getThrows();
-
         if (throwing == null) {
             return;
         }
@@ -180,25 +185,43 @@ public class JavadocListener extends JavadocParserBaseListener {
         for (JavadocParser.TypeNameContext thrower : throwing.typeName()) {
             String throwerName = thrower.getText();
 
-            if (!docThrows.contains(throwerName)) {
+            boolean found = false;
+            for(Tag tag : currentDoc.getThrows()){
+                if(tag.getTagName().equals(throwerName)){
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
                 System.out.println("WRN: Fehlendes @throw für Exception <" + throwerName + "> in " + root + " <" + methodName + ">");
             }
         }
     }
 
-    private void checkParams(String methodName, ArrayList<String> docParams, JavadocParser.JavaParamsContext javaParamsContext, String root) {
+    private void checkParams(String methodName, JavadocParser.JavaParamsContext javaParamsContext, String root) {
+
+        ArrayList<Tag> docParams = new ArrayList<>(currentDoc.getParams());
 
         for (JavadocParser.JavaParamContext param : javaParamsContext.javaParam()) {
             String paramName = param.NAME().getText();
 
-            if (!docParams.contains(paramName)) {
+            boolean found = false;
+            for(Tag tag : docParams){
+                String tagType = tag.getTagName();
+                if(tagType.equals(paramName)){
+                      found = true;
+                      docParams.remove(tag);
+                      break;
+                }
+            }
+            if(!found){
                 System.out.println("WRN: Fehlendes @param für Parameter <" + paramName + "> in " + root + " <" + methodName + ">");
             }
-            docParams.remove(paramName);
         }
 
-        for (String param : docParams) {
-            System.err.println("ERR: <@param " + param + "> ohne zugehörigen Parameter für Methode <" + methodName + ">");
+        for (Tag param : docParams) {
+            System.err.println("ERR: <@param" + param.getTagName() + "> ohne zugehörigen Parameter für Methode <" + methodName + ">");
         }
     }
 
@@ -252,7 +275,7 @@ public class JavadocListener extends JavadocParserBaseListener {
         return items;
     }
 
-    private <T extends TerminalNode> String readMultipleTokens(List<T> ctx) {
+    private <T extends TerminalNode> String readMultipleToken(List<T> ctx) {
         String items = "";
         for (T item : ctx) {
             items = addWhiteSpace(items, item.getText());

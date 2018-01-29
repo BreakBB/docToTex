@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 class LaTexGenerator {
 
@@ -63,7 +65,7 @@ class LaTexGenerator {
         }
     }
 
-    public void writeMethod(int level, String label, String annotation, String accessmod, String modifier, String type, String name, ArrayList<Pair<String, String>> params, Documentation currentDoc) {
+    public void writeMethod(int level, String label, String annotation, String accessmod, String modifier, String type, String name, HashMap<String, String> params, Documentation currentDoc) {
         if(level > 2){
             return;
         }
@@ -84,7 +86,7 @@ class LaTexGenerator {
 
             String desc = currentDoc.getDescription() == null ? "" : validateLaTexCode(currentDoc.getDescription());
             latexFile = latexFile.replace("(*/javaDoc)", desc);
-            latexFile = latexFile.replace("(*/tags)", buildTagSection(currentDoc.getTags()));
+            latexFile = latexFile.replace("(*/tags)", buildTagSection(currentDoc.getTags()) + buildTagSection(currentDoc.getParams()) + buildTagSection(currentDoc.getThrows()));
 
             writer.write(latexFile);
         }
@@ -117,10 +119,10 @@ class LaTexGenerator {
         StringBuilder text = new StringBuilder();
         for(Tag tag : tagList){
             if(tag.getRef() == null){
-                text.append("\\textbf{").append(tag.getTagType()).append(":}\n\n\\quad\\quad").append(validateLaTexCode(tag.getText() + "\n"));
+                text.append("\\textbf{").append(tag.getTagType()).append(tag.getTagName() == null ? "" : " " + tag.getTagName()).append(":}\n\n\\quad\\quad ").append(validateLaTexCode(tag.getText())).append("\n\n");
             }
             else{
-                text.append("\\textbf{").append(tag.getTagType()).append(":}\n\n\\quad\\quad").append("\\hyperref[").append(tag.getRef()).append("]{").append(validateLaTexCode(tag.getText())).append("}\n");
+                text.append("\\textbf{").append(tag.getTagType()).append(":}\n\n\\quad\\quad ").append("\\hyperref[").append(tag.getRef()).append("]{").append(validateLaTexCode(tag.getText())).append("}\n\n");
             }
         }
 
@@ -145,34 +147,34 @@ class LaTexGenerator {
         return tex;
     }
 
-    private String listParams(ArrayList<Pair<String, String>> params){
+    private String listParams(HashMap<String, String> params){
         StringBuilder text = new StringBuilder("(");
         boolean isFirst = true;
 
-        for(Pair<String, String> paramPair : params){
+        for(Map.Entry<String, String> entry : params.entrySet()){
             if(isFirst){
-                text.append(validateLaTexCode(paramPair.getKey())).append(" ").append(paramPair.getValue());
+                text.append(validateLaTexCode(entry.getValue())).append(" ").append(entry.getKey());
                 isFirst = false;
             }
             else{
-                text.append(", ").append(validateLaTexCode(paramPair.getKey())).append(" ").append(paramPair.getValue());
+                text.append(", ").append(validateLaTexCode(entry.getValue())).append(" ").append(entry.getKey());
             }
         }
 
         return text.toString() + ")";
     }
 
-    private String listThrows(ArrayList<String> allThrows){
+    private String listThrows(ArrayList<Tag> allThrows){
         StringBuilder text = new StringBuilder();
         boolean isFirst = true;
 
-        for(String s : allThrows){
+        for(Tag t : allThrows){
             if(isFirst){
-                text.append(" throws ").append(s);
+                text.append(" throws ").append(t.getTagName());
                 isFirst = false;
             }
             else {
-                text.append(", ").append(s);
+                text.append(", ").append(t.getTagName());
             }
         }
 

@@ -85,6 +85,15 @@ public class SimpleExample extends AnotherClass implements Runnable{
         }
 
         /**
+         * This method simulates some IO-Actions to show a throwing tag.
+         * @return A beautiful string
+         * @throws IOException Watch out!
+         */
+        private String readIO() throws IOException{
+            return "My String";
+        }
+
+        /**
          * This method is to show a long list of params in combination with an annotation
          * following the Javadoc
          * @param x The best value
@@ -103,7 +112,7 @@ public class SimpleExample extends AnotherClass implements Runnable{
      * This method has some more "logic" included to show that everything inside of a method
      * is skipped. Moreover there is the parameter "notDocumented" which isn't listed in the
      * Javadoc params.
-     * @param a A really huge and abstract objec
+     * @param a A really huge and abstract object
      * @param b Some useless number
      */
     public static void myMethod(ArrayList<HashMap<My22Class, Integer[]>> a, int b, String notDocumented) {
@@ -119,15 +128,19 @@ public class SimpleExample extends AnotherClass implements Runnable{
     }
 
     /*
-    Here is an undocumented method with really strange coding style.
+    Here is an undocumented method with horrible coding style.
      */
-    public ArrayList    <String> anotherMethod(String[    ] a, int b) {
-        int d;
-        int     e =     5   + 2;
+    public ArrayList    <  String> anotherMethod(String[    ] a, int b) {
+        int
+                                d;
+
+        int     e =     5
+                //   DON'T CAAAAARE!
+                + 2;
 
         String   [] f ;
 
-        return new ArrayList<>();
+            return        new         ArrayList            <> (                 );
     }
 }
 

@@ -65,12 +65,13 @@
 public class SimpleExample extends AnotherClass implements Runnable
 
 
-This is a very basic description of an outer Java - class . It contains absolutely no special characters , except for these : \{ \} ( ) [ ] © ²³ \textbackslash [ T ] / . Those special characters are escaped and don ' t result in a LaTex conflict .
+This is a very basic description of an outer Java- class. It contains absolutely no special characters, except for these:\{\}()[]©²³\textbackslash[ T]/. Those special characters are escaped and don' t result in a LaTex conflict.
 
 
 \textbf{@see:}
 
-\quad\quad\hyperref[examples.SimpleExample.My22Class:getx]{text}
+\quad\quad \hyperref[examples.SimpleExample.My22Class:getx]{text}
+
 
 \section{Methode run}
 \label{examples.SimpleExample:run}
@@ -81,7 +82,9 @@ This is a very basic description of an outer Java - class . It contains absolute
 public void run()
 
 
-This method is here to have an " implements " in the class signature and doesn ' t do anything else .
+This method is here to have an" implements" in the class signature and doesn' t do anything else.
+
+
 
 
 
@@ -92,6 +95,8 @@ This method is here to have an " implements " in the class signature and doesn '
 
 
 protected ArrayList\textless String\textgreater  getAllNames()
+
+
 
 
 
@@ -111,6 +116,12 @@ This method can be used to set your favorite name
 
 
 
+\textbf{@param name:}
+
+\quad\quad Your new favorite
+
+
+
 \section{Methode main}
 \label{examples.SimpleExample:main}
 
@@ -120,14 +131,20 @@ This method can be used to set your favorite name
 public static void main(String[] args)
 
 
-Here is our main method which doesn ' t make much sense , but includes a parameter .
+Here is our main method which doesn' t make much sense, but includes a parameter.
+
+
+
+\textbf{@param args:}
+
+\quad\quad An array of arguments
 
 
 
 \section{class My22Class}
 \label{examples.SimpleExample.My22Class}
 
-@Description(key ="description", value ="Some fancy text to show this strange description annotation which is"+"added to Javadoc")
+@Description(key="description", value="Some fancy text to show this strange description annotation which is"+"added to Javadoc")
 
 
 
@@ -151,6 +168,27 @@ public static abstract class My22Class
 
 
 
+
+
+\subsection{Methode readIO}
+\label{examples.SimpleExample.My22Class:readIO}
+
+
+
+
+private String readIO() throws IOException
+
+
+This method simulates some IO- Actions to show a throwing tag.
+
+
+
+
+\textbf{@throws IOException:}
+
+\quad\quad Watch out!
+
+
 \subsection{Methode coolMethod}
 \label{examples.SimpleExample.My22Class:coolMethod}
 
@@ -158,10 +196,28 @@ public static abstract class My22Class
 
 
 
-public void coolMethod(int x, int y, String a, HashMap\textless Integer,String\textgreater  map)
+public void coolMethod(String a, int x, int y, HashMap\textless Integer,String\textgreater  map)
 
 
 This method is to show a long list of params in combination with an annotation following the Javadoc
+
+
+
+\textbf{@param x:}
+
+\quad\quad The best value
+
+\textbf{@param y:}
+
+\quad\quad The worth value
+
+\textbf{@param a:}
+
+\quad\quad A cool string
+
+\textbf{@param map:}
+
+\quad\quad A map with really important information
 
 
 
@@ -174,7 +230,17 @@ This method is to show a long list of params in combination with an annotation f
 public static void myMethod(ArrayList\textless HashMap\textless My22Class,Integer[]\textgreater \textgreater  a, int b, String notDocumented)
 
 
-This method has some more " logic " included to show that everything inside of a method is skipped . Moreover there is the parameter " notDocumented " which isn ' t listed in the Javadoc params .
+This method has some more" logic" included to show that everything inside of a method is skipped. Moreover there is the parameter" notDocumented" which isn' t listed in the Javadoc params.
+
+
+
+\textbf{@param a:}
+
+\quad\quad A really huge and abstract object
+
+\textbf{@param b:}
+
+\quad\quad Some useless number
 
 
 
@@ -185,6 +251,8 @@ This method has some more " logic " included to show that everything inside of a
 
 
 public ArrayList\textless String\textgreater  anotherMethod(String[] a, int b)
+
+
 
 
 
