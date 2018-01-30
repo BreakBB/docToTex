@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
+
 /**
  * This is a very basic description of an outer Java-class. It contains absolutely no special characters,
  * except for these: {} () [] © ²³ \[T]/.
@@ -16,7 +17,14 @@ import java.util.HashMap;
  * @see examples.SimpleExample.My22Class#getx My awesome link
  * @version 1.0-nightlybuild
  */
-public class SimpleExample extends AnotherClass implements Runnable{
+public class SimpleExample implements Runnable{
+
+    /**
+     * This is some description text with an inlinetag referring
+     * to the Object-class {@link Object}.
+     * @param a A simple parameter
+     */
+    public void myMethod(int a){}
 
     /**
      * This ArrayList holds all the current names.
@@ -122,11 +130,12 @@ public class SimpleExample extends AnotherClass implements Runnable{
     }
 
     /**
-     * This method has some more "logic" included to show that everything inside of a method
+     * This method includes some more "logic" to show that everything inside of a method
      * is skipped. Moreover there is the parameter "notDocumented" which isn't listed in the
-     * Javadoc params.
+     * Javadoc params to force a warning message.
      * @param a A really huge and abstract object
      * @param b Some useless number
+     * @param c This is not allowed but included for presentational usage
      */
     public static void myMethod(ArrayList<HashMap<My22Class, Integer[]>> a, int b, String notDocumented) {
         int x = 0;
@@ -157,6 +166,8 @@ public class SimpleExample extends AnotherClass implements Runnable{
     }
 }
 
-class AnotherClass {
-
-}
+/**
+ * This class is a basic example to show some Javadoc.
+ * @author Wuppi Fluppi
+ */
+class AnotherClass {}

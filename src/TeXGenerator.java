@@ -9,15 +9,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-class LaTexGenerator {
+class TeXGenerator {
 
     private BufferedWriter writer = null;
 
-    LaTexGenerator(String title, String packageName) {
+    TeXGenerator(String title, String packageName) {
         try {
             writer = new BufferedWriter(new FileWriter("GeneratedLaTex/" + title + ".tex"));
 
-            writer.write(new String(Files.readAllBytes(Paths.get("LaTexConfigFiles/latexConfig.txt"))).replace("$%$title$%$", validateLaTexCode(title)).replace("$%$package$%$", packageName));
+            writer.write(new String(Files.readAllBytes(Paths.get("LaTexConfigFiles/texConfig.txt"))).replace("$%$title$%$", validateLaTexCode(title)).replace("$%$package$%$", packageName));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,13 +42,13 @@ class LaTexGenerator {
         }
 
         try {
-            String latexFile = new String(Files.readAllBytes(Paths.get("LaTexConfigFiles/latexClassOrInterfaceConfig.txt")));
+            String latexFile = new String(Files.readAllBytes(Paths.get("LaTexConfigFiles/texContentConfig.txt")));
 
             latexFile = latexFile.replace("(*/section)", getSectionName(level));
             latexFile = latexFile.replace("(*/sectionName)", concatWithWhitespaces(type.substring(0, 1).toUpperCase() + type.substring(1), name));
             latexFile = latexFile.replace("(*/label)", label);
             latexFile = latexFile.replace("(*/annotations)", validateLaTexCode(annotation));
-            latexFile = latexFile.replace("(*/classDescription)", makeBolt(concatWithWhitespaces(accessmod, modifier, type, name, polymorphy)));
+            latexFile = latexFile.replace("(*/description)", makeBolt(concatWithWhitespaces(accessmod, modifier, type, name, polymorphy)));
 
             if (currentDoc == null) {
                 currentDoc = new Documentation();
@@ -70,7 +70,7 @@ class LaTexGenerator {
         }
 
         try {
-            String latexFile = new String(Files.readAllBytes(Paths.get("LaTexConfigFiles/latexContentConfig.txt")));
+            String latexFile = new String(Files.readAllBytes(Paths.get("LaTexConfigFiles/texContentConfig.txt")));
 
             latexFile = latexFile.replace("(*/section)", getSectionName(level));
             latexFile = latexFile.replace("(*/sectionName)", "Method " + name);
@@ -81,7 +81,7 @@ class LaTexGenerator {
                 currentDoc = new Documentation();
             }
 
-            latexFile = latexFile.replace("(*/methodSignature)", makeBolt(concatWithWhitespaces(accessmod, modifier, validateLaTexCode(type), name) + listParams(params) + listThrows(currentDoc.getThrows())));
+            latexFile = latexFile.replace("(*/description)", makeBolt(concatWithWhitespaces(accessmod, modifier, validateLaTexCode(type), name) + listParams(params) + listThrows(currentDoc.getThrows())));
 
             String desc = currentDoc.getDescription() == null ? "" : replaceInlineTags(validateLaTexCode(currentDoc.getDescription()), currentDoc.getInlineTags());
             latexFile = latexFile.replace("(*/javaDoc)", desc);
@@ -99,7 +99,7 @@ class LaTexGenerator {
         }
 
         try {
-            String latexFile = new String(Files.readAllBytes(Paths.get("LaTexConfigFiles/latexContentConfig.txt")));
+            String latexFile = new String(Files.readAllBytes(Paths.get("LaTexConfigFiles/texContentConfig.txt")));
 
             latexFile = latexFile.replace("(*/section)", getSectionName(level));
             latexFile = latexFile.replace("(*/sectionName)", "Constructor " + name);
@@ -110,7 +110,7 @@ class LaTexGenerator {
                 currentDoc = new Documentation();
             }
 
-            latexFile = latexFile.replace("(*/methodSignature)", makeBolt(concatWithWhitespaces(accessmod, name) + listParams(params) + listThrows(currentDoc.getThrows())));
+            latexFile = latexFile.replace("(*/description)", makeBolt(concatWithWhitespaces(accessmod, name) + listParams(params) + listThrows(currentDoc.getThrows())));
 
             String desc = currentDoc.getDescription() == null ? "" : replaceInlineTags(validateLaTexCode(currentDoc.getDescription()), currentDoc.getInlineTags());
             latexFile = latexFile.replace("(*/javaDoc)", desc);
@@ -128,7 +128,7 @@ class LaTexGenerator {
         }
 
         try {
-            String latexFile = new String(Files.readAllBytes(Paths.get("LaTexConfigFiles/latexContentConfig.txt")));
+            String latexFile = new String(Files.readAllBytes(Paths.get("LaTexConfigFiles/texContentConfig.txt")));
 
             latexFile = latexFile.replace("(*/section)", getSectionName(level));
             latexFile = latexFile.replace("(*/sectionName)", "Field " + name);
@@ -139,7 +139,7 @@ class LaTexGenerator {
                 currentDoc = new Documentation();
             }
 
-            latexFile = latexFile.replace("(*/methodSignature)", makeBolt(concatWithWhitespaces(accessmod, modifier, validateLaTexCode(type), name)));
+            latexFile = latexFile.replace("(*/description)", makeBolt(concatWithWhitespaces(accessmod, modifier, validateLaTexCode(type), name)));
 
             String desc = currentDoc.getDescription() == null ? "" : replaceInlineTags(validateLaTexCode(currentDoc.getDescription()), currentDoc.getInlineTags());
 

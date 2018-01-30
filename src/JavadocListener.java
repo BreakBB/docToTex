@@ -12,7 +12,7 @@ public class JavadocListener extends JavadocParserBaseListener {
     private String hierarchy = "";
     private static String docTitle;
     private static String packageName = "";
-    private LaTexGenerator gen;
+    private TeXGenerator gen;
     private int level = 0;
 
     @Override
@@ -245,7 +245,7 @@ public class JavadocListener extends JavadocParserBaseListener {
 
         for (JavadocParser.AnnotationContext item : ctx) {
             TerminalNode funcName = item.FUNC_NAME();
-            annotations.append("@").append(funcName == null ? item.typeName().getText() + "(" : funcName.getText());
+            annotations.append("@").append(funcName == null ? item.typeName().getText() + (item.PARATHESES_OPEN() == null ? "" : "(") : funcName.getText());
 
             if (item.skipCodeToParatheses() != null) {
                 annotations.append(skipCodeToParatheses(item.skipCodeToParatheses())).append(")").append("\n");
@@ -298,14 +298,14 @@ public class JavadocListener extends JavadocParserBaseListener {
         }
 
         for (Tag param : docParams) {
-            System.err.println("ERR: <@param" + param.getTagName() + "> ohne zugehörigen Parameter für Methode <" + methodName + ">");
+            System.err.println("ERR: <@param " + param.getTagName() + "> ohne zugehörigen Parameter für Methode <" + methodName + ">");
         }
     }
 
     @Override
     public void exitJavaClassOrInterfaceDef(JavadocParser.JavaClassOrInterfaceDefContext ctx) {
         if (gen == null) {
-            gen = new LaTexGenerator(docTitle, packageName);
+            gen = new TeXGenerator(docTitle, packageName);
         }
 
         String type = ctx.INTERFACE() == null ? "class" : "interface";

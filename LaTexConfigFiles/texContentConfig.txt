@@ -4,7 +4,7 @@
 (*/annotations)
 
 
-(*/methodSignature)
+(*/description)
 
 
 (*/javaDoc)

@@ -59,7 +59,7 @@
 
 
 
-\textbf{public class SimpleExample extends AnotherClass implements Runnable}
+\textbf{public class SimpleExample implements Runnable}
 
 
 This is a very basic description of an outer Java -class. It contains absolutely no special characters, except for these :\{\}()[]©²³\textbackslash[T ]/. Those special characters are escaped and don 't result in a LaTex conflict.
@@ -76,6 +76,25 @@ This is a very basic description of an outer Java -class. It contains absolutely
 \textbf{@version:}
 
 \quad\quad 1.0- nightlybuild
+
+
+\section{Method myMethod}
+\label{examples.SimpleExample:myMethod}
+
+
+
+
+\textbf{public void myMethod(int a)}
+
+
+This is some description text with an inlinetag referring to the Object -class \hyperref[Object]{\textbf{\color{inlineTagLink}}}.
+
+
+
+\textbf{@param a:}
+
+\quad\quad A simple parameter
+
 
 
 \section{Field allNames}
@@ -332,7 +351,7 @@ This method is to show a long list of params in combination with an annotation f
 \textbf{public static void myMethod(ArrayList\textless HashMap\textless My22Class,Integer[]\textgreater \textgreater  a, int b, String notDocumented)}
 
 
-This method has some more "logic "included to show that everything inside of a method is skipped. Moreover there is the parameter "notDocumented "which isn 't listed in the Javadoc params.
+This method includes some more "logic "to show that everything inside of a method is skipped. Moreover there is the parameter "notDocumented "which isn 't listed in the Javadoc params to force a warning message.
 
 
 
@@ -343,6 +362,10 @@ This method has some more "logic "included to show that everything inside of a m
 \textbf{@param b:}
 
 \quad\quad Some useless number
+
+\textbf{@param c:}
+
+\quad\quad This is not allowed
 
 
 
@@ -370,8 +393,12 @@ This method has some more "logic "included to show that everything inside of a m
 \textbf{class AnotherClass}
 
 
+This class is a basic example to show some Javadoc.
 
 
+\textbf{@author:}
+
+\quad\quad Wuppi Fluppi
 
 
 
