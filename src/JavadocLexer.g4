@@ -62,6 +62,10 @@ HASHTAG
     : '#'
     ;
 
+VARARGS
+    : '...'
+    ;
+
 DOT
     : '.'
     ;

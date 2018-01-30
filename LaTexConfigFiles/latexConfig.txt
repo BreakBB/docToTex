@@ -12,20 +12,17 @@
 \usepackage{hyperref}
 \usepackage{fancyhdr}
 
+% Eigene Farben
+\usepackage{xcolor}
+\definecolor{inlineTagLink}{rgb}{0, 0.4, 0}
+\definecolor{tagLink}{rgb}{0, 0, 0.8}
+
 % Kopf- und Fußzeilen setzen
 \pagestyle{fancy}
 \fancyhf{}
 \setlength{\headheight}{15pt}
 \fancyhead[R]{\textit{\nouppercase{\rightmark}}}
 \fancyfoot[C]{\thepage}
-
-% Die Farbe von Zitatverlinkungen auf "Blau" setzen
-\hypersetup{
- colorlinks=true,
- citecolor=blue,
- linkcolor=black,
- urlcolor=blue
-}
 
 % Dokumenttitel
 \title{$%$title$%$}

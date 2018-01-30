@@ -4,6 +4,7 @@ import com.sun.org.glassfish.gmbal.Description;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /**
@@ -12,7 +13,7 @@ import java.util.HashMap;
  * Those special characters are escaped and don't result in a LaTex conflict.
  *
  * @author Lutz Winkelmann, Björn Böing
- * @see examples.SimpleExample.My22Class#getx text
+ * @see examples.SimpleExample.My22Class#getx My awesome link
  * @version 1.0-nightlybuild
  */
 public class SimpleExample extends AnotherClass implements Runnable{
@@ -42,9 +43,16 @@ public class SimpleExample extends AnotherClass implements Runnable{
     }
 
     protected ArrayList<String> getAllNames(){
-        allNames.add("Dieter");
-
         return allNames;
+    }
+
+    /**
+     * This method can be used to add 1 to n names. It shows the support of
+     * the varargs operator.
+     * @param name A list of names
+     */
+    public void addNames(String... name){
+        allNames.addAll(Arrays.asList(name));
     }
 
     /**
@@ -71,14 +79,18 @@ public class SimpleExample extends AnotherClass implements Runnable{
         counter = 0;
     }
 
+    /**
+     * We can even use and link inline tags {@link examples.AnotherClass and this is the link}. As you can see, this
+     * links to an external class, but it has to be in the same document.
+     */
     @Description(key = "description", value = "Some fancy text to show this strange description annotation which is" +
             "added to Javadoc")
     public static abstract class My22Class {
         abstract int getx(String a);
 
         /**
-         *
-         * @throws IOException asdasd
+         * This is a basic constructor which throws an IOException
+         * @throws IOException some serious exception
          */
         My22Class() throws IOException {
             throw new IOException();
@@ -86,6 +98,7 @@ public class SimpleExample extends AnotherClass implements Runnable{
 
         /**
          * This method simulates some IO-Actions to show a throwing tag.
+         * @serialData Much serialized, such WOW!
          * @return A beautiful string
          * @throws IOException Watch out!
          */

@@ -12,20 +12,17 @@
 \usepackage{hyperref}
 \usepackage{fancyhdr}
 
+% Eigene Farben
+\usepackage{xcolor}
+\definecolor{inlineTagLink}{rgb}{0, 0.4, 0}
+\definecolor{tagLink}{rgb}{0, 0, 0.8}
+
 % Kopf- und Fußzeilen setzen
 \pagestyle{fancy}
 \fancyhf{}
 \setlength{\headheight}{15pt}
 \fancyhead[R]{\textit{\nouppercase{\rightmark}}}
 \fancyfoot[C]{\thepage}
-
-% Die Farbe von Zitatverlinkungen auf "Blau" setzen
-\hypersetup{
- colorlinks=true,
- citecolor=blue,
- linkcolor=black,
- urlcolor=blue
-}
 
 % Dokumenttitel
 \title{SimpleExample}
@@ -56,45 +53,107 @@
 
 
 %Start des Inhaltes
-\chapter{class SimpleExample}
+\chapter{Class SimpleExample}
 \label{examples.SimpleExample}
 
 
 
 
-public class SimpleExample extends AnotherClass implements Runnable
+\textbf{public class SimpleExample extends AnotherClass implements Runnable}
 
 
-This is a very basic description of an outer Java- class. It contains absolutely no special characters, except for these:\{\}()[]©²³\textbackslash[ T]/. Those special characters are escaped and don' t result in a LaTex conflict.
+This is a very basic description of an outer Java -class. It contains absolutely no special characters, except for these :\{\}()[]©²³\textbackslash[T ]/. Those special characters are escaped and don 't result in a LaTex conflict.
 
+
+\textbf{@author:}
+
+\quad\quad Lutz Winkelmann, Bj örn B öing
 
 \textbf{@see:}
 
-\quad\quad \hyperref[examples.SimpleExample.My22Class:getx]{text}
+\quad\quad \hyperref[examples.SimpleExample.My22Class:getx]{\color{tagLink}My awesome link}
+
+\textbf{@version:}
+
+\quad\quad 1.0- nightlybuild
 
 
-\section{Methode run}
+\section{Field allNames}
+\label{examples.SimpleExample:allNames}
+
+
+
+
+\textbf{private ArrayList\textless String\textgreater  allNames}
+
+
+This ArrayList holds all the current names.
+
+
+
+\section{Field favoriteName}
+\label{examples.SimpleExample:favoriteName}
+
+
+
+
+\textbf{private String favoriteName}
+
+
+This string stores the favorite name.
+
+
+
+\section{Field counter}
+\label{examples.SimpleExample:counter}
+
+
+
+
+\textbf{private static int counter}
+
+
+
+
+
+
+\section{Constructor SimpleExample}
+\label{examples.SimpleExample:SimpleExample}
+
+
+
+
+\textbf{SimpleExample(String name)}
+
+
+
+
+
+
+
+
+\section{Method run}
 \label{examples.SimpleExample:run}
 
 
 
 
-public void run()
+\textbf{public void run()}
 
 
-This method is here to have an" implements" in the class signature and doesn' t do anything else.
+This method is here to have an "implements "in the class signature and doesn 't do anything else.
 
 
 
 
 
-\section{Methode getAllNames}
+\section{Method getAllNames}
 \label{examples.SimpleExample:getAllNames}
 
 
 
 
-protected ArrayList\textless String\textgreater  getAllNames()
+\textbf{protected ArrayList\textless String\textgreater  getAllNames()}
 
 
 
@@ -103,13 +162,32 @@ protected ArrayList\textless String\textgreater  getAllNames()
 
 
 
-\section{Methode setFavoriteName}
+\section{Method addNames}
+\label{examples.SimpleExample:addNames}
+
+
+
+
+\textbf{public void addNames(String... name)}
+
+
+This method can be used to add 1 to n names. It shows the support of the varargs operator.
+
+
+
+\textbf{@param name:}
+
+\quad\quad A list of names
+
+
+
+\section{Method setFavoriteName}
 \label{examples.SimpleExample:setFavoriteName}
 
 
 
 
-public void setFavoriteName(String name)
+\textbf{public void setFavoriteName(String name)}
 
 
 This method can be used to set your favorite name
@@ -122,16 +200,16 @@ This method can be used to set your favorite name
 
 
 
-\section{Methode main}
+\section{Method main}
 \label{examples.SimpleExample:main}
 
 
 
 
-public static void main(String[] args)
+\textbf{public static void main(String[] args)}
 
 
-Here is our main method which doesn' t make much sense, but includes a parameter.
+Here is our main method which doesn 't make much sense, but includes a parameter.
 
 
 
@@ -141,27 +219,27 @@ Here is our main method which doesn' t make much sense, but includes a parameter
 
 
 
-\section{class My22Class}
+\section{Class My22Class}
 \label{examples.SimpleExample.My22Class}
 
-@Description(key="description", value="Some fancy text to show this strange description annotation which is"+"added to Javadoc")
+@Description(key ="description", value ="Some fancy text to show this strange description annotation which is"+"added to Javadoc")
 
 
 
-public static abstract class My22Class
+\textbf{public static abstract class My22Class}
+
+
+We can even use and link inline tags \hyperref[examples.AnotherClass]{\textbf{\color{inlineTagLink} and this is the link}}. As you can see, this links to an external class, but it has to be in the same document.
 
 
 
-
-
-
-\subsection{Methode getx}
+\subsection{Method getx}
 \label{examples.SimpleExample.My22Class:getx}
 
 
 
 
- abstract int getx(String a)
+\textbf{abstract int getx(String a)}
 
 
 
@@ -170,17 +248,41 @@ public static abstract class My22Class
 
 
 
-\subsection{Methode readIO}
+\subsection{Constructor My22Class}
+\label{examples.SimpleExample.My22Class:My22Class}
+
+
+
+
+\textbf{My22Class() throws IOException}
+
+
+This is a basic constructor which throws an IOException
+
+
+
+
+\textbf{@throws IOException:}
+
+\quad\quad some serious exception
+
+
+\subsection{Method readIO}
 \label{examples.SimpleExample.My22Class:readIO}
 
 
 
 
-private String readIO() throws IOException
+\textbf{private String readIO() throws IOException}
 
 
-This method simulates some IO- Actions to show a throwing tag.
+This method simulates some IO -Actions to show a throwing tag.
 
+
+\textbf{@serialData:}
+
+\quad\quad Much serialized, such WOW! 
+         * @returnAbeautifulstring
 
 
 
@@ -189,14 +291,14 @@ This method simulates some IO- Actions to show a throwing tag.
 \quad\quad Watch out!
 
 
-\subsection{Methode coolMethod}
+\subsection{Method coolMethod}
 \label{examples.SimpleExample.My22Class:coolMethod}
 
 @com.sun.org.glassfish.gmbal.Description("Here my value"+"over multiple lines to show an even stranger annotation")
 
 
 
-public void coolMethod(String a, int x, int y, HashMap\textless Integer,String\textgreater  map)
+\textbf{public void coolMethod(String a, int x, int y, HashMap\textless Integer,String\textgreater  map)}
 
 
 This method is to show a long list of params in combination with an annotation following the Javadoc
@@ -221,16 +323,16 @@ This method is to show a long list of params in combination with an annotation f
 
 
 
-\section{Methode myMethod}
+\section{Method myMethod}
 \label{examples.SimpleExample:myMethod}
 
 
 
 
-public static void myMethod(ArrayList\textless HashMap\textless My22Class,Integer[]\textgreater \textgreater  a, int b, String notDocumented)
+\textbf{public static void myMethod(ArrayList\textless HashMap\textless My22Class,Integer[]\textgreater \textgreater  a, int b, String notDocumented)}
 
 
-This method has some more" logic" included to show that everything inside of a method is skipped. Moreover there is the parameter" notDocumented" which isn' t listed in the Javadoc params.
+This method has some more "logic "included to show that everything inside of a method is skipped. Moreover there is the parameter "notDocumented "which isn 't listed in the Javadoc params.
 
 
 
@@ -244,13 +346,13 @@ This method has some more" logic" included to show that everything inside of a m
 
 
 
-\section{Methode anotherMethod}
+\section{Method anotherMethod}
 \label{examples.SimpleExample:anotherMethod}
 
 
 
 
-public ArrayList\textless String\textgreater  anotherMethod(String[] a, int b)
+\textbf{public ArrayList\textless String\textgreater  anotherMethod(String[] a, int b)}
 
 
 
@@ -259,13 +361,13 @@ public ArrayList\textless String\textgreater  anotherMethod(String[] a, int b)
 
 
 
-\chapter{class AnotherClass}
+\chapter{Class AnotherClass}
 \label{examples.AnotherClass}
 
 
 
 
- class AnotherClass
+\textbf{class AnotherClass}
 
 
 

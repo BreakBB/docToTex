@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-// TODO: Evtl auf Stringbuilder / String.format umändern
-
 public class JavadocListener extends JavadocParserBaseListener {
 
     private Documentation currentDoc;
@@ -35,34 +33,44 @@ public class JavadocListener extends JavadocParserBaseListener {
 
     @Override
     public void exitInlineTag(JavadocParser.InlineTagContext ctx) {
-        JavadocParser.InlineTagContentContext inlineTagContentContext = ctx.inlineTagContent();
-        String text = inlineTagContentContext == null ? "" : inlineTagContentContext.getText();
+        String tagName = ctx.inlineTagName().getText();
+        String tagText = ctx.inlineTagContent() == null ? "" : readMultipleRules(ctx.inlineTagContent().braceContent());
 
-        currentDoc.addInlineTags(new Tag(ctx.inlineTagName().getText(), null, text, null));
+        if(ctx.inlineTagName().INLINE_LINK() != null || ctx.inlineTagName().INLINE_LINK_PLAIN() != null){
+            String firstAttr = tagText.isEmpty() ? null : ctx.inlineTagContent().braceContent(0).getChild(0).getClass().equals(JavadocParser.BraceTextContext.class) ? ctx.inlineTagContent().braceContent(0).getChild(0).getText().replace("#", ":") : null;
+            tagText = firstAttr == null ? tagText : tagText.substring(firstAttr.length());
+            currentDoc.addInlineTags(new Tag(tagName, null, tagText, firstAttr));
+        }
+
+        currentDoc.addInlineTags(new Tag(tagName, null, tagText, null));
 
         String desc = currentDoc.getDescription();
-        currentDoc.setDescription(desc == null ? "{*/}" : desc + " " + "{*/}");
+        currentDoc.setDescription(desc == null ? "*/" : desc + " " + "*/");
     }
 
-    @Override
-    public void exitSee(JavadocParser.SeeContext ctx) {
-        String typeName = ctx.typeName() == null ? ctx.SEE_REF().getText() : ctx.typeName().getText();
-        String name = ctx.classTagEnd().isEmpty() ? typeName : readMultipleRules(ctx.classTagEnd());
-
-        currentDoc.addTags(new Tag(ctx.SEE().getText(), null, name, typeName.replace("#", ":")));
-    }
-
-    //TODO: Leerzeichen prüfen, dass es an der richigen Stelle eingefügt wird
     private String addWhiteSpace(String old, String add) {
-        if(add.matches("^.*[a-zA-Z0-9].*$")){
-            return old == null || old.isEmpty() ? add : old + " " + add;
+        if(old != null && !old.matches("^.*[a-zA-Z0-9][\\S]$") && !old.matches("^.*[a-zA-Z0-9]$") && !old.matches(".*[.,;!?]$")){
+            return old.isEmpty() ? add : old + add;
         }
-        return old == null || old.isEmpty() ? add : old + add;
+
+        if(add.matches("[.,;!?]")){
+            return old == null || old.isEmpty() ? add : old + add;
+        }
+
+        return old == null || old.isEmpty() ? add : old + " " + add;
     }
 
     @Override
     public void enterJavaDocStart(JavadocParser.JavaDocStartContext ctx) {
         currentDoc = new Documentation();
+    }
+
+    @Override
+    public void exitSee(JavadocParser.SeeContext ctx) {
+        String typeName = ctx.typeName() == null ? ctx.SEE_REF().getText() : ctx.typeName().getText();
+        String name = ctx.tagEnd().isEmpty() ? typeName : readMultipleRules(ctx.tagEnd());
+
+        currentDoc.addTags(new Tag(ctx.SEE().getText(), null, name, typeName.replace("#", ":")));
     }
 
     @Override
@@ -74,6 +82,37 @@ public class JavadocListener extends JavadocParserBaseListener {
     public void exitThrows(JavadocParser.ThrowsContext ctx) {
 
         currentDoc.addThrows(new Tag(ctx.EXCEPTION().getText(), ctx.typeName().getText(), readMultipleRules(ctx.methodOrConstructorTagEnd()), null));
+    }
+
+    @Override
+    public void exitSerialData(JavadocParser.SerialDataContext ctx) {
+        currentDoc.addTags(new Tag(ctx.SERIAL_DATA().getText(), null, readMultipleRules(ctx.methodOrConstructorTagEnd()), null));
+    }
+
+    @Override
+    public void exitSince(JavadocParser.SinceContext ctx) {
+        currentDoc.addTags(new Tag(ctx.SINCE().getText(), null, readMultipleRules(ctx.tagEnd()), null));
+    }
+
+    @Override
+    public void exitDeprecated(JavadocParser.DeprecatedContext ctx) {
+        currentDoc.addTags(new Tag(ctx.DEPRECATED().getText(), null, readMultipleRules(ctx.tagEnd()), null));
+    }
+
+    @Override
+    public void exitClassTag(JavadocParser.ClassTagContext ctx) {
+        if(ctx.tag() != null){
+            return;
+        }
+        currentDoc.addTags(new Tag(ctx.getChild(0).getText(), null, readMultipleRules(ctx.classTagEnd()), null));
+    }
+
+    @Override
+    public void exitFieldTag(JavadocParser.FieldTagContext ctx) {
+        if(ctx.tag() != null){
+            return;
+        }
+        currentDoc.addTags(new Tag(ctx.getChild(0).getText(), null, readMultipleRules(ctx.fieldTagEnd()), null));
     }
 
     @Override
@@ -132,10 +171,70 @@ public class JavadocListener extends JavadocParserBaseListener {
         currentDoc = null;
     }
 
+    @Override
+    public void exitJavaConstructor(JavadocParser.JavaConstructorContext ctx) {
+        // Remove ( at the end
+        String constructorName = ctx.FUNC_NAME().getText();
+        constructorName = constructorName.substring(0, constructorName.length() - 1);
+
+        if (currentDoc == null) {
+            System.out.println("WRN: Fehlendes Javadoc für Konstruktor <" + constructorName + ">");
+            currentDoc = new Documentation();
+        }
+        else {
+            String root = "Konstruktor";
+
+            // Param
+            checkParams(constructorName, ctx.javaParams(), root);
+
+            // Throws
+            checkThrows(constructorName, ctx.throwing(), root);
+        }
+
+        String annotation = "";
+        if (ctx.annotation() != null) {
+            annotation = readAnnotations(ctx.annotation());
+        }
+
+        String accessmod = ctx.ACCESSMODS() == null ? "" : ctx.ACCESSMODS().getText();
+
+        HashMap<String, String> currentParams = getParams(ctx.javaParams().javaParam());
+
+        gen.writeConstructor(level, hierarchy + ":" + constructorName, annotation, accessmod, constructorName, currentParams, currentDoc);
+
+        currentDoc = null;
+    }
+
+    @Override
+    public void exitJavaField(JavadocParser.JavaFieldContext ctx) {
+        String fieldName = ctx.NAME().getText();
+
+        // Return
+        String fieldType = ctx.type().getText();
+
+        if (currentDoc == null) {
+            System.out.println("INFO: Kein Javadoc für Variable <" + fieldName + "> vom Typ <" + fieldType + ">");
+            currentDoc = new Documentation();
+        }
+
+        String annotation = "";
+        if (ctx.annotation() != null) {
+            annotation = readAnnotations(ctx.annotation());
+        }
+
+        String accessmod = ctx.ACCESSMODS() == null ? "" : ctx.ACCESSMODS().getText();
+
+        String modifier = readMultipleRules(ctx.modifier());
+
+        gen.writeField(level, hierarchy + ":" + fieldName, annotation, accessmod, modifier, fieldType, fieldName, currentDoc);
+
+        currentDoc = null;
+    }
+
     private HashMap<String, String> getParams(List<JavadocParser.JavaParamContext> ctx) {
         HashMap<String, String> map = new HashMap<>();
         for(JavadocParser.JavaParamContext item : ctx){
-            map.put(item.NAME().getText(), item.type().getText());
+            map.put(item.NAME().getText(), item.VARARGS() != null ? item.type().getText() + item.VARARGS().getText() : item.type().getText());
         }
 
         return map;
@@ -153,28 +252,6 @@ public class JavadocListener extends JavadocParserBaseListener {
             }
         }
         return annotations.toString();
-    }
-
-    @Override
-    public void exitJavaConstructor(JavadocParser.JavaConstructorContext ctx) {
-
-        // Remove ( at the end
-        String methodName = ctx.FUNC_NAME().getText();
-        methodName = methodName.substring(0, methodName.length() - 1);
-
-        if (currentDoc == null) {
-            System.out.println("WRN: Fehlendes Javadoc für Konstruktor <" + methodName + ">");
-        } else {
-            String root = "Konstruktor";
-
-            // Param
-            checkParams(methodName, ctx.javaParams(), root);
-
-            // Throws
-            checkThrows(methodName, ctx.throwing(), root);
-
-            currentDoc = null;
-        }
     }
 
     private void checkThrows(String methodName, JavadocParser.ThrowingContext throwing, String root) {
@@ -261,6 +338,12 @@ public class JavadocListener extends JavadocParserBaseListener {
         level++;
     }
 
+    @Override
+    public void exitJavaClassOrInterface(JavadocParser.JavaClassOrInterfaceContext ctx) {
+        level--;
+        hierarchy = hierarchy.substring(0, hierarchy.lastIndexOf('.'));
+    }
+
     private <T extends ParserRuleContext> String readMultipleRules(List<T> ctx) {
         String items = "";
         for (T item : ctx) {
@@ -298,26 +381,6 @@ public class JavadocListener extends JavadocParserBaseListener {
     private String skipCodeToQuote(JavadocParser.SkipToQuoteContext ctx) {
         return readMultipleRules(ctx.notQuote()) + "\"";
     }
-
-    @Override
-    public void exitJavaClassOrInterface(JavadocParser.JavaClassOrInterfaceContext ctx) {
-        level--;
-        hierarchy = hierarchy.substring(0, hierarchy.lastIndexOf('.'));
-    }
-
-    @Override
-    public void exitJavaField(JavadocParser.JavaFieldContext ctx) {
-        String type = ctx.type().getText();
-        String name = ctx.NAME().getText();
-
-        // Felder evtl. gar nicht prüfen
-        if (currentDoc == null) {
-            System.out.println("INFO: Kein Javadoc für Variable <" + name + "> vom Typ <" + type + ">");
-        } else {
-            currentDoc = null;
-        }
-    }
-
 
     public static void main(String[] args) throws Exception {
 

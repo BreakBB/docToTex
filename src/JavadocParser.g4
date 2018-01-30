@@ -3,8 +3,7 @@ parser grammar JavadocParser;
 options { tokenVocab=JavadocLexer; }
 
 // TODO: Anonyme innere Klassen
-// TODO: HTML evtl. unterstützen
-// TODO: Tags erweitern mit gültigem Content
+// TODO: HTML evtl. unterstützen - Wird escaped wäre aber zu viel für den Projektrahmen
 
 documentation
 	: EOF
@@ -62,7 +61,6 @@ javaConstructor
     : annotation* ACCESSMODS? FUNC_NAME javaParams throwing? block
     ;
 
-// TODO: '...' Operator bei Parametern unterstützen
 javaMethod
     : annotation* ACCESSMODS? modifier* type FUNC_NAME javaParams throwing? (SEMI | block)
     ;
@@ -82,7 +80,7 @@ javaParams
     ;
 
 javaParam
-    : type NAME
+    : type VARARGS? NAME
     ;
 
 throwing
@@ -92,11 +90,6 @@ throwing
 polymorphy
     : IMPLEMENTS typeName (COMMA typeName)*
     | EXTENDS typeName
-    ;
-
-classType
-    : CLASS
-    | INTERFACE
     ;
 
 type
@@ -139,12 +132,14 @@ docText
     | ABSTRACT
     | EXTENDS
     | IMPLEMENTS
+    | THROWS
     | PACKAGE
     | IMPORT
     | COMMA
     | SEMI
     | AT
     | HASHTAG
+    | VARARGS
     | DOT
     | QUOTE
     | SINGLE_QUOTE
@@ -204,14 +199,14 @@ braceText
 // ============= Documented Tags ==================
 
 tag
-    : SEE (typeName | SEE_REF) classTagEnd*    # See
-    | SINCE classTagEnd+                       # Since
-    | DEPRECATED classTagEnd+                  # Deprecated
+    : SEE (typeName | SEE_REF) tagEnd*    # See
+    | SINCE tagEnd+                       # Since
+    | DEPRECATED tagEnd+                  # Deprecated
     ;
 
 classTag
     : AUTHOR classTagEnd+
-    | SERIAL classTagEnd+
+    | SERIAL classTagEnd*
     | VERSION classTagEnd+
     | tag
     ;
@@ -220,16 +215,24 @@ classTagEnd
     : ~(JAVADOC_END | SERIAL | VERSION | SEE | SINCE | DEPRECATED)
     ;
 
+tagEnd
+    : ~(JAVADOC_END | SERIAL | VERSION | SEE | SINCE | DEPRECATED | PARAM | EXCEPTION | SERIAL_DATA)
+    ;
+
 fieldTag
-    : SERIAL
-    | SERIAL_FIELD
+    : SERIAL fieldTagEnd*
+    | SERIAL_FIELD fieldTagEnd*
     | tag
+    ;
+
+fieldTagEnd
+    : ~(JAVADOC_END | SERIAL | SEE | SINCE | DEPRECATED | SERIAL_FIELD)
     ;
 
 methodOrConstructorTag
     : PARAM NAME methodOrConstructorTagEnd+         # Params
     | EXCEPTION typeName methodOrConstructorTagEnd+ # Throws
-    | SERIAL_DATA                                   # SerialData
+    | SERIAL_DATA methodOrConstructorTagEnd*        # SerialData
     | tag                                           # TagTag
     ;
 
